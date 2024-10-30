@@ -1,36 +1,42 @@
 # JT808
 
-中华人民共和国交通运输行业标准JT/T808协议的命令生成和解析库;
+A command generation and parsing library for the JT/T808 protocol, which is a transportation industry standard in the People's Republic of China.
 
+## Quick Start
 
-## 快速使用
-本工程使用`CMake`构建工具, 编译工具为`G++`(`Windows`系统下为`MinGW G++`).
+This project uses the `CMake` build tool, and the compiler is `G++` (for Windows systems, it is `MinGW G++`).
 
-### 编译准备
+### Compilation Preparation
 
-#### Ubuntu 系统
+#### Ubuntu System
+
 ```bash
-$ sudo apt-get install cmake cmake-curses-gui
+sudo apt-get install cmake cmake-curses-gui
 ```
 
-#### Windows 系统
-到官网下载[MinGW](http://www.mingw.org/), 安装并设置好环境变量.
-到官网下载[CMake](https://cmake.org/download/), 安装并设置好环境变量.
+#### Windows System
 
-### 编译
+Download [MinGW](http://www.mingw.org/) from the official website, install it, and set up the environment variables.
+Download [CMake](https://cmake.org/download/) from the official website, install it, and set up the environment variables.
+
+### Compilation
+
 ```bash
-$ cmake .. && make
+cmake .. && make
 ```
 
-### 编译示例程序
-```bash
-$ cmake .. -DJT808_BUILD_EXAMPLES=ON && make
-```
-编译输出文件位于`build/examples`目录下.
+### Compile Example Programs
 
-
-### 生成 debug 版和 release 版的程序
 ```bash
-$ ccmake ..
+cmake .. -DJT808_BUILD_EXAMPLES=ON && make
 ```
-编辑`CMAKE_BUILD_TYPE`行, 填写`Debug`或`Release`.
+
+The compiled output files are located in the `build/examples` directory.
+
+### Generate Debug and Release Versions of the Program
+
+```bash
+ccmake ..
+```
+
+Edit the `CMAKE_BUILD_TYPE` line and enter `Debug` or `Release`.

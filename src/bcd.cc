@@ -29,111 +29,112 @@
 
 #include "jt808/bcd.h"
 
-
 namespace libjt808 {
 
 uint8_t HexToBcd(uint8_t const& src) {
-  uint8_t temp;
-  temp = ((src / 10) << 4) + (src % 10);
-  return temp;
+    uint8_t temp;
+    temp = ((src / 10) << 4) + (src % 10);
+    return temp;
 }
 
-uint8_t BcdToHex(uint8_t const&src) {
-  uint8_t temp;
-  temp = (src >> 4)*10 + (src & 0x0f);
-  return temp;
+uint8_t BcdToHex(uint8_t const& src) {
+    uint8_t temp;
+    temp = (src >> 4) * 10 + (src & 0x0f);
+    return temp;
 }
 
-uint8_t *StringToBcdCompress(const uint8_t *src, uint8_t *dst, const int &srclen) {
-  uint8_t *ptr = dst;
-  uint8_t temp;
-  if (srclen % 2 != 0) {
-    *ptr++ = HexToBcd(*src++-'0');
-  }
-  while (*src) {
-    temp = *src++ - '0';
-    temp *= 10;
-    temp += *src++ - '0';
-    *ptr++ = HexToBcd(temp);
-  }
-  *ptr = 0;
-  return dst;
-}
-
-uint8_t *BcdToStringCompress(const uint8_t *src, uint8_t *dst, const int &srclen) {
-  uint8_t *ptr = dst;
-  uint8_t temp;
-  int cnt = srclen;
-  while (cnt--) {
-    temp = BcdToHex(*src);
-    *ptr++ = temp/10 + '0';
-    if (dst[0] == '0') {
-      ptr = dst;
+uint8_t* StringToBcdCompress(uint8_t const* src, uint8_t* dst, int const& srclen) {
+    uint8_t* ptr = dst;
+    uint8_t  temp;
+    if (srclen % 2 != 0) {
+        *ptr++ = HexToBcd(*src++ - '0');
     }
-    *ptr++ = temp%10 + '0';
-    ++src;
-  }
-  return dst;
+    while (*src) {
+        temp = *src++ - '0';
+        temp *= 10;
+        temp += *src++ - '0';
+        *ptr++ = HexToBcd(temp);
+    }
+    *ptr = 0;
+    return dst;
 }
 
-uint8_t *BcdToStringCompressFillingZero(const uint8_t *src,
-                                        uint8_t *dst, const int &srclen) {
-  uint8_t *ptr = dst;
-  uint8_t temp;
-  int cnt = srclen;
-  while (cnt--) {
-    temp = BcdToHex(*src);
-    *ptr++ = temp/10 + '0';
-    *ptr++ = temp%10 + '0';
-    ++src;
-  }
-  return dst;
+uint8_t* BcdToStringCompress(uint8_t const* src, uint8_t* dst, int const& srclen) {
+    uint8_t* ptr = dst;
+    uint8_t  temp;
+    int      cnt = srclen;
+    while (cnt--) {
+        temp   = BcdToHex(*src);
+        *ptr++ = temp / 10 + '0';
+        if (dst[0] == '0') {
+            ptr = dst;
+        }
+        *ptr++ = temp % 10 + '0';
+        ++src;
+    }
+    return dst;
+}
+
+uint8_t* BcdToStringCompressFillingZero(uint8_t const* src, uint8_t* dst, int const& srclen) {
+    uint8_t* ptr = dst;
+    uint8_t  temp;
+    int      cnt = srclen;
+    while (cnt--) {
+        temp   = BcdToHex(*src);
+        *ptr++ = temp / 10 + '0';
+        *ptr++ = temp % 10 + '0';
+        ++src;
+    }
+    return dst;
 }
 
 int StringToBcd(std::string const& in, std::vector<uint8_t>* out) {
-  if (out == nullptr) return -1;
-  out->clear();
-  size_t pos = 0;
-  if (in.size() % 2 != 0) {
-    out->push_back(HexToBcd(in[pos]-'0'));
-    ++pos;
-  }
-  uint8_t tmp = 0;
-  for (; pos < in.size();) {
-    tmp = (in[pos]-'0')*10 + (in[pos+1]-'0');
-    out->push_back(HexToBcd(tmp));
-    pos += 2;
-  }
-  return 0;
+    if (out == nullptr)
+        return -1;
+    out->clear();
+    size_t pos = 0;
+    if (in.size() % 2 != 0) {
+        out->push_back(HexToBcd(in[pos] - '0'));
+        ++pos;
+    }
+    uint8_t tmp = 0;
+    for (; pos < in.size();) {
+        tmp = (in[pos] - '0') * 10 + (in[pos + 1] - '0');
+        out->push_back(HexToBcd(tmp));
+        pos += 2;
+    }
+    return 0;
 }
 
 int BcdToString(std::vector<uint8_t> const& in, std::string* out) {
-  if (out == nullptr) return -1;
-  out->clear();
-  size_t pos = 0;
-  uint8_t tmp = BcdToHex(in[pos]);
-  if (tmp / 10 == 0) {
-    out->push_back(tmp%10+'0');
-    ++pos;
-  }
-  for (; pos < in.size(); ++pos) {
-    tmp = BcdToHex(in[pos]);
-    out->push_back(tmp/10+'0');
-    out->push_back(tmp%10+'0');
-  }
-  return 0;
+    if (out == nullptr)
+        return -1;
+    out->clear();
+    size_t  pos = 0;
+    uint8_t tmp = BcdToHex(in[pos]);
+    if (tmp / 10 == 0) {
+        out->push_back(tmp % 10 + '0');
+        ++pos;
+    }
+    for (; pos < in.size(); ++pos) {
+        tmp = BcdToHex(in[pos]);
+        out->push_back(tmp / 10 + '0');
+        out->push_back(tmp % 10 + '0');
+    }
+    return 0;
 }
 
 int BcdToStringFillZero(std::vector<uint8_t> const& in, std::string* out) {
-  if (out == nullptr) return -1;
-  out->clear();
-  uint8_t tmp = 0;
-  for (auto& uch : in) {
-    tmp = BcdToHex(uch);
-    out->push_back(tmp/10+'0');
-    out->push_back(tmp%10+'0');
-  }
-  return 0;
+    if (out == nullptr)
+        return -1;
+    out->clear();
+    uint8_t tmp = 0;
+    for (auto& uch : in) {
+        tmp = BcdToHex(uch);
+        out->push_back(tmp / 10 + '0');
+        out->push_back(tmp % 10 + '0');
+    }
+    return 0;
 }
 
-}  // namespace libjt808
+} // namespace libjt808

@@ -37,15 +37,15 @@
 
 namespace libjt808 {
 
-uint8_t HexToBcd(uint8_t const& src);
-uint8_t BcdToHex(uint8_t const&src);
-uint8_t* StringToBcdCompress(const uint8_t *src, uint8_t *dst, const int &srclen);
-uint8_t* BcdToStringCompress(const uint8_t *src, uint8_t *dst, const int &srclen);
-uint8_t* BcdToStringCompressFillingZero(const uint8_t *src,
-                                        uint8_t *dst, const int &srclen);
-int StringToBcd(std::string const& in, std::vector<uint8_t>* out);
-int BcdToString(std::vector<uint8_t> const& in, std::string* out);
-int BcdToStringFillZero(std::vector<uint8_t> const& in, std::string* out);
-}  // namespace libjt808
+uint8_t  HexToBcd(uint8_t const& src);
+uint8_t  BcdToHex(uint8_t const& src);
+uint8_t* StringToBcdCompress(uint8_t const* src, uint8_t* dst, int const& srclen);
+uint8_t* BcdToStringCompress(uint8_t const* src, uint8_t* dst, int const& srclen);
+uint8_t* BcdToStringCompressFillingZero(uint8_t const* src, uint8_t* dst, int const& srclen);
+int      StringToBcd(std::string const& in, std::vector<uint8_t>* out);
+int      BcdToString(std::vector<uint8_t> const& in, std::string* out);
+int      BcdToStringFillZero(std::vector<uint8_t> const& in, std::string* out);
 
-#endif  // JT808_BCD_H_
+} // namespace libjt808
+
+#endif // JT808_BCD_H_

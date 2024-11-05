@@ -39,39 +39,29 @@
 
 #include "jt808/protocol_parameter.h"
 
-
 namespace libjt808 {
 
-// 消息体解析函数定义.
-// 成功返回0, 失败返回-1.
-using ParseHandler = std::function<
-    int (std::vector<uint8_t> const& in, ProtocolParameter* para)>;
+// Message body parsing function definition.
+// Returns 0 on success, -1 on failure.
+using ParseHandler = std::function<int(std::vector<uint8_t> const& in, ProtocolParameter* para)>;
 
-// 解析器定义, map<key, value>, key: 消息ID, value: 解析消息体处理函数.
+// Parser definition, map<key, value>, key: message ID, value: message body parsing handler.
 using Parser = std::map<uint16_t, ParseHandler>;
 
-// 解析器初始化命令, 里面提供了一部分命令的解析功能.
+// Parser initialization command, provides parsing functionality for some commands.
 int JT808FrameParserInit(Parser* parser);
 
-// 额外增加解析器支持命令.
-bool JT808FrameParserAppend(
-    Parser* parser, std::pair<uint16_t, ParseHandler> const& pair);
-bool JT808FrameParserAppend(Parser* parser,
-                            uint16_t const& msg_id,
-                            ParseHandler const& handler);
+// Additional parser support commands.
+bool JT808FrameParserAppend(Parser* parser, std::pair<uint16_t, ParseHandler> const& pair);
+bool JT808FrameParserAppend(Parser* parser, uint16_t const& msg_id, ParseHandler const& handler);
 
-// 重写解析器支持命令.
-bool JT808FrameParserOverride(
-    Parser* parser, std::pair<uint16_t, ParseHandler> const& pair);
-bool JT808FrameParserOverride(Parser* parser,
-                              uint16_t const& msg_id,
-                              ParseHandler const& handler);
+// Override parser support commands.
+bool JT808FrameParserOverride(Parser* parser, std::pair<uint16_t, ParseHandler> const& pair);
+bool JT808FrameParserOverride(Parser* parser, uint16_t const& msg_id, ParseHandler const& handler);
 
-// 解析命令.
-int JT808FrameParse(Parser const& parser,
-                    std::vector<uint8_t> const& in,
-                    ProtocolParameter* para);
+// Parse command.
+int JT808FrameParse(Parser const& parser, std::vector<uint8_t> const& in, ProtocolParameter* para);
 
-}  // namespace libjt808
+} // namespace libjt808
 
-#endif  // JT808_PARSER_H_
+#endif // JT808_PARSER_H_

@@ -36,288 +36,284 @@
 #include <string>
 #include <vector>
 
-
 namespace libjt808 {
 
-// 报警标志位
+// Alarm bits
 union AlarmBit {
-  struct {
-    // 紧急报瞥触动报警开关后触发.
-    uint32_t sos:1;
-    // 超速报警.
-    uint32_t overspeed:1;
-    // 疲劳驾驶.
-    uint32_t fatigue:1;
-    // 预警.
-    uint32_t early_warning:1;
-    // GNSS模块发生故障.
-    uint32_t gnss_fault:1;
-    // GNSS天线未接或被剪断.
-    uint32_t gnss_antenna_cut:1;
-    // GNSS天线短路.
-    uint32_t gnss_antenna_shortcircuit:1;
-    // 终端主电源欠压.
-    uint32_t power_low:1;
-    // 终端主电源掉电.
-    uint32_t power_cut:1;
-    // 终端LCD或显示器故障.
-    uint32_t lcd_fault:1;
-    // TTS模块故障.
-    uint32_t tts_fault:1;
-    // 摄像头故障.
-    uint32_t camera_fault:1;
-    // OBD故障码.
-    uint32_t obd_fault_code:1;
-    // 保留5位.
-    uint32_t retain1:5;
-    // 当天累计驾驶超时.
-    uint32_t day_drive_overtime:1;
-    // 超时停车.
-    uint32_t stop_driving_overtime:1;
-    // 进出区域.
-    uint32_t in_out_area:1;
-    // 进出路线.
-    uint32_t in_out_road:1;
-    // 路段行驶时间不足/过长.
-    uint32_t road_drive_time:1;
-    // 路线偏离报警.
-    uint32_t road_deviate:1;
-    // 车辆VSS故障.
-    uint32_t vss_fault:1;
-    // 车辆油量异常.
-    uint32_t oil_fault:1;
-    // 车辆被盗(通过车辆防盗器).
-    uint32_t car_alarm:1;
-    // 车辆非法点火.
-    uint32_t car_acc_alarm:1;
-    // 车辆非法位移.
-    uint32_t car_move:1;
-    // 碰撞侧翻报警.
-    uint32_t collision:1;
-    // 保留2位.
-    uint32_t retain2:2;
-  }bit;
-  uint32_t value;
+    struct {
+        // Emergency alarm triggered after pressing the alarm switch.
+        uint32_t sos                       : 1;
+        // Overspeed alarm.
+        uint32_t overspeed                 : 1;
+        // Fatigue driving.
+        uint32_t fatigue                   : 1;
+        // Early warning.
+        uint32_t early_warning             : 1;
+        // GNSS module failure.
+        uint32_t gnss_fault                : 1;
+        // GNSS antenna not connected or cut.
+        uint32_t gnss_antenna_cut          : 1;
+        // GNSS antenna short circuit.
+        uint32_t gnss_antenna_shortcircuit : 1;
+        // Terminal main power undervoltage.
+        uint32_t power_low                 : 1;
+        // Terminal main power outage.
+        uint32_t power_cut                 : 1;
+        // Terminal LCD or display failure.
+        uint32_t lcd_fault                 : 1;
+        // TTS module failure.
+        uint32_t tts_fault                 : 1;
+        // Camera failure.
+        uint32_t camera_fault              : 1;
+        // OBD fault code.
+        uint32_t obd_fault_code            : 1;
+        // Reserved 5 bits.
+        uint32_t retain1                   : 5;
+        // Cumulative driving overtime for the day.
+        uint32_t day_drive_overtime        : 1;
+        // Overtime parking.
+        uint32_t stop_driving_overtime     : 1;
+        // Entering/exiting area.
+        uint32_t in_out_area               : 1;
+        // Entering/exiting route.
+        uint32_t in_out_road               : 1;
+        // Insufficient/excessive driving time on road section.
+        uint32_t road_drive_time           : 1;
+        // Route deviation alarm.
+        uint32_t road_deviate              : 1;
+        // Vehicle VSS failure.
+        uint32_t vss_fault                 : 1;
+        // Abnormal vehicle oil level.
+        uint32_t oil_fault                 : 1;
+        // Vehicle theft (through vehicle anti-theft device).
+        uint32_t car_alarm                 : 1;
+        // Illegal vehicle ignition.
+        uint32_t car_acc_alarm             : 1;
+        // Illegal vehicle displacement.
+        uint32_t car_move                  : 1;
+        // Collision/rollover alarm.
+        uint32_t collision                 : 1;
+        // Reserved 2 bits.
+        uint32_t retain2                   : 2;
+    } bit;
+
+    uint32_t value;
 };
 
-// 状态位
+// Status bits
 union StatusBit {
-  struct {
-    // ACC开关, 0:ACC关; 1:ACC开.
-    uint32_t acc:1;
-    // 定位标志, 0:未定位; 1:定位.
-    uint32_t positioning:1;
-    // 纬度半球, 0:北纬: 1:南纬.
-    uint32_t sn_latitude:1;
-    // 经度半球, 0:东经; 1:西经.
-    uint32_t ew_longitude:1;
-    // 0:运营状态; 1:停运状态.
-    uint32_t operation:1;  // 0:运营状态; 1:停运状态.
-    // 0:经纬度未经保密插件加密; 1:经纬度已经保密插件加密.
-    uint32_t gps_encrypt:1;
-    // 保留2位.
-    uint32_t retain1:2;
-    // 00: 空车; 01: 半载; 10: 保留; 11: 满载.
-    uint32_t trip_status:2;
-    // 0:车辆油路正常; 1:车辆油路断开.
-    uint32_t oil_cut:1;
-    // 0:车辆电路正常; 1:车辆电路断开.
-    uint32_t circuit_cut:1;
-    // 0:车门解锁; 1: 车门加锁.
-    uint32_t door_lock:1;
-    // 0:门1 关; 1: 门1 开; (前门).
-    uint32_t door1_status:1;
-    // 0:门2 关; 1: 门2 开; (中门).
-    uint32_t door2_status:1;
-    // 0:门 3 关; 1: 门 3 开; (后门).
-    uint32_t door3_status:1;
-    // 0:门 4 关; 1: 门 4 开; (驾驶席门).
-    uint32_t door4_status:1;
-    // 0:门 5 关; 1: 门 5 开; (自定义).
-    uint32_t door5_status:1;
-    // 0: 未使用 GPS 卫星进行定位; 1: 使用 GPS 卫星进行定位.
-    uint32_t gps_en:1;
-    // 0: 未使用北斗卫星进行定位; 1: 使用北斗卫星进行定位.
-    uint32_t beidou_en:1;
-    // 0: 未使用 GLONASS 卫星进行定位; 1: 使用 GLONASS 卫星进行定位.
-    uint32_t glonass_en:1;
-    // 0: 未使用 Galileo 卫星进行定位; 1: 使用 Galileo 卫星进行定位.
-    uint32_t galileo_en:1;
-    // 保留10位.
-    uint32_t retain2:10;
-  }bit;
-  uint32_t value;
+    struct {
+        // ACC switch, 0: ACC off; 1: ACC on.
+        uint32_t acc          : 1;
+        // Positioning flag, 0: not positioned; 1: positioned.
+        uint32_t positioning  : 1;
+        // Latitude hemisphere, 0: north latitude; 1: south latitude.
+        uint32_t sn_latitude  : 1;
+        // Longitude hemisphere, 0: east longitude; 1: west longitude.
+        uint32_t ew_longitude : 1;
+        // 0: operating status; 1: out of service status.
+        uint32_t operation    : 1;
+        // 0: longitude and latitude not encrypted by the security plugin; 1: longitude and latitude encrypted by the
+        // security plugin.
+        uint32_t gps_encrypt  : 1;
+        // Reserved 2 bits.
+        uint32_t retain1      : 2;
+        // 00: empty; 01: half load; 10: reserved; 11: full load.
+        uint32_t trip_status  : 2;
+        // 0: vehicle oil circuit normal; 1: vehicle oil circuit disconnected.
+        uint32_t oil_cut      : 1;
+        // 0: vehicle circuit normal; 1: vehicle circuit disconnected.
+        uint32_t circuit_cut  : 1;
+        // 0: door unlocked; 1: door locked.
+        uint32_t door_lock    : 1;
+        // 0: door 1 closed; 1: door 1 open; (front door).
+        uint32_t door1_status : 1;
+        // 0: door 2 closed; 1: door 2 open; (middle door).
+        uint32_t door2_status : 1;
+        // 0: door 3 closed; 1: door 3 open; (rear door).
+        uint32_t door3_status : 1;
+        // 0: door 4 closed; 1: door 4 open; (driver's door).
+        uint32_t door4_status : 1;
+        // 0: door 5 closed; 1: door 5 open; (custom).
+        uint32_t door5_status : 1;
+        // 0: GPS satellite not used for positioning; 1: GPS satellite used for positioning.
+        uint32_t gps_en       : 1;
+        // 0: Beidou satellite not used for positioning; 1: Beidou satellite used for positioning.
+        uint32_t beidou_en    : 1;
+        // 0: GLONASS satellite not used for positioning; 1: GLONASS satellite used for positioning.
+        uint32_t glonass_en   : 1;
+        // 0: Galileo satellite not used for positioning; 1: Galileo satellite used for positioning.
+        uint32_t galileo_en   : 1;
+        // Reserved 10 bits.
+        uint32_t retain2      : 10;
+    } bit;
+
+    uint32_t value;
 };
 
-// 位置基本信息数据.
+// Location basic information data.
 struct LocationBasicInformation {
-  union AlarmBit alarm;
-  union StatusBit status;
-  // 纬度(以度为单位的纬度值乘以10的6次方, 精确到百万分之一度)
-  uint32_t latitude;
-  // 经度(以度为单位的纬度值乘以10的6次方, 精确到百万分之一度)
-  uint32_t longitude;
-  // 海拔高度, 单位为米(m)
-  uint16_t altitude;
-  // 速度 1/10km/h
-  uint16_t speed;
-  // 方向 0-359,正北为0, 顺时针
-  uint16_t bearing;
-  // 时间, "YYMMDDhhmmss"(GMT+8时间, 本标准之后涉及的时间均采用此时区).
-  std::string time;
+    union AlarmBit  alarm;
+    union StatusBit status;
+    // Latitude (latitude value in degrees multiplied by 10^6, accurate to one millionth of a degree)
+    uint32_t latitude;
+    // Longitude (longitude value in degrees multiplied by 10^6, accurate to one millionth of a degree)
+    uint32_t longitude;
+    // Altitude, unit: meter (m)
+    uint16_t altitude;
+    // Speed 1/10km/h
+    uint16_t speed;
+    // Bearing 0-359, true north is 0, clockwise
+    uint16_t bearing;
+    // Time, "YYMMDDhhmmss" (GMT+8 time, all times in this standard use this time zone).
+    std::string time;
 };
 
-// 扩展车辆信号状态位
+// Extended vehicle signal status bits
 union ExtendedVehicleSignalBit {
-  struct {
-    // 近光灯信号
-    uint32_t near_lamp:1;
-    // 远光灯信号
-    uint32_t farl_amp:1;
-    // 右转向灯信号
-    uint32_t right_turn_lamp:1;
-    // 左转向灯信号
-    uint32_t left_turn_lamp:1;
-    // 制动信号
-    uint32_t breaking:1;
-    // 倒档信号
-    uint32_t reversing:1;
-    // 雾灯信号
-    uint32_t fog_lamp:1;
-    // 示廓灯
-    uint32_t outline_lamp:1;
-    // 喇叭信号
-    uint32_t horn:1;
-    // 空调状态
-    uint32_t air_conditioner:1;
-    // 空挡信号
-    uint32_t neutral:1;
-    // 缓速器工作
-    uint32_t retarder:1;
-    // ABS 工作
-    uint32_t abs:1;
-    // 加热器工作
-    uint32_t heater:1;
-    // 离合器状态
-    uint32_t clutch:1;
-    // 保留17位.
-    uint32_t retain:17;
-  }bit;
-  uint32_t value;
+    struct {
+        // Low beam signal
+        uint32_t near_lamp       : 1;
+        // High beam signal
+        uint32_t farl_amp        : 1;
+        // Right turn signal
+        uint32_t right_turn_lamp : 1;
+        // Left turn signal
+        uint32_t left_turn_lamp  : 1;
+        // Brake signal
+        uint32_t breaking        : 1;
+        // Reverse signal
+        uint32_t reversing       : 1;
+        // Fog lamp signal
+        uint32_t fog_lamp        : 1;
+        // Outline lamp
+        uint32_t outline_lamp    : 1;
+        // Horn signal
+        uint32_t horn            : 1;
+        // Air conditioner status
+        uint32_t air_conditioner : 1;
+        // Neutral signal
+        uint32_t neutral         : 1;
+        // Retarder working
+        uint32_t retarder        : 1;
+        // ABS working
+        uint32_t abs             : 1;
+        // Heater working
+        uint32_t heater          : 1;
+        // Clutch status
+        uint32_t clutch          : 1;
+        // Reserved 17 bits.
+        uint32_t retain          : 17;
+    } bit;
+
+    uint32_t value;
 };
 
-// 位置信息上报附加项ID.
+// Location information report additional item ID.
 enum LocationExtensionId {
-  // 里程, 1/10km, 对应车上里程表读数, DWORD
-  kMileage = 0x01,
-  // 油量, 1/10L, 对应车上油量表读数, WORD
-  kOilMass = 0x02,
-  // 行驶记录功能获取的速度, 1/10km/h, WORD
-  kTachographSpeed = 0x03,
-  // 需要人工确认报警事件的 ID, 从 1 开始计数, WORD
-  kAlarmCount = 0x04,
-  // 超速报警附加信息, BYTE or BYTE+DWORD
-  kOverSpeedAlarm = 0x11,
-  // 进出区域/路线报警附加信息, BYTE+DWORD+BYTE
-  kAccessAreaAlarm = 0x12,
-  // 路段行驶时间不足/过长报警附加信息, DWORD+WORD+BYTE
-  kDrivingTimeAlarm = 0x13,
-  // 扩展车辆信号状态位, DWORD
-  kVehicleSignalStatus = 0x25,
-  // IO 状态位, WORD
-  kIoStatus = 0x2A,
-  // 模拟量, DWORD
-  kAnalogQuantity = 0x2B,
-  // 无线通信网络信号强度, BYTE
-  kNetworkQuantity = 0x30,
-  // GNSS 定位卫星数, BYTE
-  kGnssSatellites = 0x31,
-  // 后续自定义信息长度, BYTE
-  kCustomInformationLength = 0xE0,
-  // 定位解状态, BYTE
-  kPositioningStatus = 0xEE
+    // Mileage, 1/10km, corresponding to the mileage reading on the vehicle, DWORD
+    kMileage = 0x01,
+    // Oil mass, 1/10L, corresponding to the oil mass reading on the vehicle, WORD
+    kOilMass = 0x02,
+    // Speed obtained by the tachograph function, 1/10km/h, WORD
+    kTachographSpeed = 0x03,
+    // ID of the alarm event that requires manual confirmation, starting from 1, WORD
+    kAlarmCount = 0x04,
+    // Overspeed alarm additional information, BYTE or BYTE+DWORD
+    kOverSpeedAlarm = 0x11,
+    // Access area/route alarm additional information, BYTE+DWORD+BYTE
+    kAccessAreaAlarm = 0x12,
+    // Insufficient/excessive driving time alarm additional information, DWORD+WORD+BYTE
+    kDrivingTimeAlarm = 0x13,
+    // Extended vehicle signal status bits, DWORD
+    kVehicleSignalStatus = 0x25,
+    // IO status bits, WORD
+    kIoStatus = 0x2A,
+    // Analog quantity, DWORD
+    kAnalogQuantity = 0x2B,
+    // Wireless communication network signal strength, BYTE
+    kNetworkQuantity = 0x30,
+    // Number of GNSS positioning satellites, BYTE
+    kGnssSatellites = 0x31,
+    // Length of subsequent custom information, BYTE
+    kCustomInformationLength = 0xE0,
+    // Positioning solution status, BYTE
+    kPositioningStatus = 0xEE
 };
 
-// 位置信息附加项存储定义: key: itemid, value: itemvalue.
+// Definition of location information additional items storage: key: itemid, value: itemvalue.
 using LocationExtensions = std::map<uint8_t, std::vector<uint8_t>>;
 
-//  超速报警附加信息位置类型, BYTE.
+// Overspeed alarm additional information location type, BYTE.
 enum kOverSpeedAlarmLocationType {
-  // 无特定位置.
-  kOverSpeedAlarmNoSpecificLocation=0x0,
-  // 圆形区域.
-  kOverSpeedAlarmCircularArea,
-  // 矩形区域.
-  kOverSpeedAlarmRectangleArea,
-  // 多边形区域.
-  kOverSpeedAlarmPolygonArea,
-  // 路段.
-  kOverSpeedAlarmRoadSection
+    // No specific location.
+    kOverSpeedAlarmNoSpecificLocation = 0x0,
+    // Circular area.
+    kOverSpeedAlarmCircularArea,
+    // Rectangular area.
+    kOverSpeedAlarmRectangleArea,
+    // Polygonal area.
+    kOverSpeedAlarmPolygonArea,
+    // Road section.
+    kOverSpeedAlarmRoadSection
 };
 
-// 进出区域/路线报警附加信息消息体位置类型, BYTE.
+// Access area/route alarm additional information message body location type, BYTE.
 enum kAccessAreaAlarmLocationType {
-  // 圆形区域.
-  kAccessAreaAlarmCircularArea=0x0,
-  // 矩形区域.
-  kAccessAreaAlarmRectangleArea,
-  // 多边形区域.
-  kAccessAreaAlarmPolygonArea,
-  // 路线.
-  kOverSpeedAlarmRoute
+    // Circular area.
+    kAccessAreaAlarmCircularArea = 0x0,
+    // Rectangular area.
+    kAccessAreaAlarmRectangleArea,
+    // Polygonal area.
+    kAccessAreaAlarmPolygonArea,
+    // Route.
+    kOverSpeedAlarmRoute
 };
 
-// 进出区域/路线报警附加信息消息体方向类型, BYTE.
+// Access area/route alarm additional information message body direction type, BYTE.
 enum kAccessAreaAlarmDirectionType {
-  // 进入区域.
-  kAccessAreaAlarmInArea=0x0,
-  // 离开区域.
-   kAccessAreaAlarmOutArea
+    // Entering the area.
+    kAccessAreaAlarmInArea = 0x0,
+    // Leaving the area.
+    kAccessAreaAlarmOutArea
 };
 
-// IO 状态位
+// IO status bits
 union IoStatusBit {
-  struct {
-    // 深度休眠状态
-    uint16_t deep_rmancy:1;
-    // 休眠状态
-    uint16_t dormancy:1;
-    // 保留14位.
-    uint16_t retain:14;
-  }bit;
-  uint16_t value;
+    struct {
+        // Deep dormancy state
+        uint16_t deep_dormancy : 1;
+        // Dormancy state
+        uint16_t dormancy      : 1;
+        // Reserved 14 bits.
+        uint16_t retain        : 14;
+    } bit;
+
+    uint16_t value;
 };
 
-// 临时位置跟踪控制信息.
+// Temporary location tracking control information.
 struct LocationTrackingControl {
-  // 时间间隔.
-  uint16_t interval;
-  // 单位为秒(s), 有效时间.
-  uint32_t tracking_time;
+    // Time interval.
+    uint16_t interval;
+    // Valid time in seconds (s).
+    uint32_t tracking_time;
 };
 
-// 设置超速报警附加信息消息体.
-int SetOverSpeedAlarmBody(uint8_t const& location_type,
-                          uint32_t const& area_route_id,
-                          std::vector<uint8_t>* out);
+// Set overspeed alarm additional information message body.
+int SetOverSpeedAlarmBody(uint8_t const& location_type, uint32_t const& area_route_id, std::vector<uint8_t>* out);
 
-// 获得超速报警报警附加信息消息体.
-int GetOverSpeedAlarmBody(std::vector<uint8_t> const& out,
-                          uint8_t* location_type,
-                          uint32_t* area_route_id);
+// Get overspeed alarm additional information message body.
+int GetOverSpeedAlarmBody(std::vector<uint8_t> const& out, uint8_t* location_type, uint32_t* area_route_id);
 
-// 设置进出区域/路线报警附加信息消息体.
-int SetAccessAreaAlarmBody(uint8_t const& location_type,
-                           uint32_t const& area_route_id,
-                           uint8_t const& direction,
+// Set access area/route alarm additional information message body.
+int SetAccessAreaAlarmBody(uint8_t const& location_type, uint32_t const& area_route_id, uint8_t const& direction,
                            std::vector<uint8_t>* out);
 
-// 获得进出区域/路线报警附加信息消息体.
-int GetAccessAreaAlarmBody(std::vector<uint8_t> const& out,
-                           uint8_t* location_type,
-                           uint32_t* area_route_id,
+// Get access area/route alarm additional information message body.
+int GetAccessAreaAlarmBody(std::vector<uint8_t> const& out, uint8_t* location_type, uint32_t* area_route_id,
                            uint8_t* direction);
 
-}  // namespace libjt808
+} // namespace libjt808
 
-#endif  // JT808_LOCATION_REPORT_H_
+#endif // JT808_LOCATION_REPORT_H_

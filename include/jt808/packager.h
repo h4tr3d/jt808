@@ -41,36 +41,27 @@
 
 namespace libjt808 {
 
-// 消息体封装函数定义.
-// 成功返回消息体总长度(byte), 失败返回-1.
-using PackageHandler = std::function<
-    int (ProtocolParameter const& para, std::vector<uint8_t>* out)>;
+// Message body packaging function definition.
+// Returns the total length of the message body (in bytes) on success, -1 on failure.
+using PackageHandler = std::function<int(ProtocolParameter const& para, std::vector<uint8_t>* out)>;
 
-// 封装器定义, map<key, value>, key: 消息ID, value: 封装处理函数.
+// Packager definition, map<key, value>, key: message ID, value: packaging handler function.
 using Packager = std::map<uint16_t, PackageHandler>;
 
-// 封装器初始化命令, 里面提供了一部分命令的封装功能.
+// Packager initialization command, provides packaging functionality for some commands.
 int JT808FramePackagerInit(Packager* packager);
 
-// 额外增加封装器支持命令.
-bool JT808FramePackagerAppend(
-    Packager* packager, std::pair<uint16_t, PackageHandler> const& pair);
-bool JT808FramePackagerAppend(Packager* packager,
-                              uint16_t const& msg_id,
-                              PackageHandler const& handler);
+// Additional commands to support the packager.
+bool JT808FramePackagerAppend(Packager* packager, std::pair<uint16_t, PackageHandler> const& pair);
+bool JT808FramePackagerAppend(Packager* packager, uint16_t const& msg_id, PackageHandler const& handler);
 
-// 重写封装器支持命令.
-bool JT808FramePackagerOverride(
-    Packager* packager, std::pair<uint16_t, PackageHandler> const& pair);
-bool JT808FramePackagerOverride(Packager* packager,
-                                uint16_t const& msg_id,
-                                PackageHandler const& handler);
+// Overwrite commands to support the packager.
+bool JT808FramePackagerOverride(Packager* packager, std::pair<uint16_t, PackageHandler> const& pair);
+bool JT808FramePackagerOverride(Packager* packager, uint16_t const& msg_id, PackageHandler const& handler);
 
-// 封装命令.
-int JT808FramePackage(Packager const& packager,
-                      ProtocolParameter const& para,
-                      std::vector<uint8_t>* out);
+// Packaging command.
+int JT808FramePackage(Packager const& packager, ProtocolParameter const& para, std::vector<uint8_t>* out);
 
-}  // namespace libjt808
+} // namespace libjt808
 
-#endif  // JT808_PACKAGER_H_
+#endif // JT808_PACKAGER_H_

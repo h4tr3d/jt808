@@ -38,276 +38,296 @@
 #include "jt808/terminal_parameter.h"
 #include "jt808/multimedia_upload.h"
 
-
 namespace libjt808 {
 
-// 已支持的协议命令.
+// Supported protocol commands.
 enum SupportedCommands {
-  kTerminalGeneralResponse = 0x0001,  // 终端通用应答.
-  kPlatformGeneralResponse = 0x8001,  // 平台通用应答.
-  kTerminalHeartBeat = 0x0002,  // 终端心跳.
-  kFillPacketRequest = 0x8003,  // 补传分包请求.
-  kTerminalRegister = 0x0100,  // 终端注册.
-  kTerminalRegisterResponse = 0x8100,  // 终端注册应答.
-  kTerminalLogOut = 0x0003,  // 终端注销.
-  kTerminalAuthentication= 0x0102,  // 终端鉴权.
-  kSetTerminalParameters = 0x8103,  // 设置终端参数.
-  kGetTerminalParameters = 0x8104,  // 查询终端参数.
-  kGetSpecificTerminalParameters = 0x8106,  // 查询指定终端参数.
-  kGetTerminalParametersResponse = 0x0104,  // 查询终端参数应答.
-  kTerminalUpgrade = 0x8108,  // 下发终端升级包.
-  kTerminalUpgradeResultReport = 0x0108,  // 终端升级结果通知.
-  kLocationReport = 0x0200,  // 位置信息汇报.
-  kGetLocationInformation = 0x8201,  // 位置信息查询.
-  kGetLocationInformationResponse = 0x0201,  // 位置信息查询应答.
-  kLocationTrackingControl = 0x8202,  // 临时位置跟踪控制.
-  kSetPolygonArea = 0x8604,  // 设置多边形区域.
-  kDeletePolygonArea = 0x8605,  // 删除多边形区域.
-  kMultimediaDataUpload = 0x0801,  // 多媒体数据上传.
-  kMultimediaDataUploadResponse = 0x8800,  // 多媒体数据上传应答.
+    kTerminalGeneralResponse        = 0x0001, // Terminal general response.
+    kPlatformGeneralResponse        = 0x8001, // Platform general response.
+    kTerminalHeartBeat              = 0x0002, // Terminal heartbeat.
+    kFillPacketRequest              = 0x8003, // Fill packet request.
+    kTerminalRegister               = 0x0100, // Terminal register.
+    kTerminalRegisterResponse       = 0x8100, // Terminal register response.
+    kTerminalLogOut                 = 0x0003, // Terminal logout.
+    kTerminalAuthentication         = 0x0102, // Terminal authentication.
+    kSetTerminalParameters          = 0x8103, // Set terminal parameters.
+    kGetTerminalParameters          = 0x8104, // Get terminal parameters.
+    kGetSpecificTerminalParameters  = 0x8106, // Get specific terminal parameters.
+    kGetTerminalParametersResponse  = 0x0104, // Get terminal parameters response.
+    kTerminalUpgrade                = 0x8108, // Terminal upgrade.
+    kTerminalUpgradeResultReport    = 0x0108, // Terminal upgrade result report.
+    kLocationReport                 = 0x0200, // Location report.
+    kGetLocationInformation         = 0x8201, // Get location information.
+    kGetLocationInformationResponse = 0x0201, // Get location information response.
+    kLocationTrackingControl        = 0x8202, // Location tracking control.
+    kSetPolygonArea                 = 0x8604, // Set polygon area.
+    kDeletePolygonArea              = 0x8605, // Delete polygon area.
+    kMultimediaDataUpload           = 0x0801, // Multimedia data upload.
+    kMultimediaDataUploadResponse   = 0x8800, // Multimedia data upload response.
+
+    // Additional commands.
+    kDriverIdentityInformation = 0x0702, // Driver identity information.
 };
 
-// 所有应答命令.
+// All response commands.
 constexpr uint16_t kResponseCommand[] = {
-  kTerminalGeneralResponse,
-  kPlatformGeneralResponse,
-  kTerminalRegisterResponse,
-  kGetTerminalParametersResponse,
-  kGetLocationInformationResponse,
+    kTerminalGeneralResponse,       kPlatformGeneralResponse,        kTerminalRegisterResponse,
+    kGetTerminalParametersResponse, kGetLocationInformationResponse,
 };
 
-// 车牌颜色.
+// Vehicle plate color.
 enum VehiclePlateColor {
-  kVin = 0x0,  // 车辆未上牌.
-  kBlue,
-  kYellow,
-  kBlack,
-  kWhite,
-  kOther
+    kVin = 0x0, // Vehicle not registered.
+    kBlue,
+    kYellow,
+    kBlack,
+    kWhite,
+    kOther
 };
 
-// 通用应答结果.
+// General response result.
 enum GeneralResponseResult {
-  kSuccess = 0x0,  // 成功/确认.
-  kFailure,  // 失败.
-  kMessageHasWrong,  // 消息有误.
-  kNotSupport,  // 不支持.
-  kAlarmHandlingConfirmation,  // 报警处理确认, 仅平台应答使用.
+    kSuccess = 0x0,             // Success/Confirmation.
+    kFailure,                   // Failure.
+    kMessageHasWrong,           // Message has error.
+    kNotSupport,                // Not supported.
+    kAlarmHandlingConfirmation, // Alarm handling confirmation, used only by platform response.
 };
 
-// 注册应答结果.
+// Register response result.
 enum RegisterResponseResult {
-  kRegisterSuccess = 0x0,  // 成功.
-  kVehiclesHaveBeenRegistered,  // 车辆已被注册.
-  kNoSuchVehicleInTheDatabase,  // 数据库中无该车辆.
-  kTerminalHaveBeenRegistered,  // 终端已被注册.
-  kNoSuchTerminalInTheDatabase,  // 数据库中无该终端.
+    kRegisterSuccess = 0x0,       // Success.
+    kVehiclesHaveBeenRegistered,  // Vehicle has been registered.
+    kNoSuchVehicleInTheDatabase,  // No such vehicle in the database.
+    kTerminalHaveBeenRegistered,  // Terminal has been registered.
+    kNoSuchTerminalInTheDatabase, // No such terminal in the database.
 };
 
-// 消息体属性.
+// Message body attributes.
 union MsgBodyAttribute {
-  struct {
-    // 消息体长度, 占用10bit.
-    uint16_t msglen:10;
-    // 数据加密方式, 当此三位都为0, 表示消息体不加密,
-    // 当第10位为1, 表示消息体经过RSA算法加密.
-    uint16_t encrypt:3;
-    // 分包标记.
-    uint16_t packet:1;
-    // 保留2位.
-    uint16_t retain:2;
-  }bit;
-  uint16_t u16val;
+    struct {
+        // Message body length, occupies 10 bits.
+        uint16_t msglen  : 10;
+        // Data encryption method, when these three bits are all 0, it means the message body is not encrypted,
+        // when the 10th bit is 1, it means the message body is encrypted with RSA algorithm.
+        uint16_t encrypt : 3;
+        // Packet flag.
+        uint16_t packet  : 1;
+        // Reserved 2 bits.
+        uint16_t retain  : 2;
+    } bit;
+
+    uint16_t u16val;
 };
 
-// 消息内容起始位置.
+// Message content starting position.
 enum MsgBodyPos {
-  MSGBODY_NOPACKET_POS = 13,  // 短消息体消息内容起始位置.
-  MSGBODY_PACKET_POS = 17,  // 长消息体消息内容起始位置.
+    MSGBODY_NOPACKET_POS = 13, // Starting position of short message body content.
+    MSGBODY_PACKET_POS   = 17, // Starting position of long message body content.
 };
 
-// 转义相关标识.
+// Escape related flags.
 enum ProtocolEscapeFlag {
-  PROTOCOL_SIGN = 0x7E,  // 标识位.
-  PROTOCOL_ESCAPE = 0x7D,  // 转义标识.
-  PROTOCOL_ESCAPE_SIGN = 0x02,  // 0x7E<-->0x7D后紧跟一个0x02.
-  PROTOCOL_ESCAPE_ESCAPE = 0x01,  // 0x7D<-->0x7D后紧跟一个0x01.
+    PROTOCOL_SIGN          = 0x7E, // Flag bit.
+    PROTOCOL_ESCAPE        = 0x7D, // Escape flag.
+    PROTOCOL_ESCAPE_SIGN   = 0x02, // 0x7E<-->0x7D followed by 0x02.
+    PROTOCOL_ESCAPE_ESCAPE = 0x01, // 0x7D<-->0x7D followed by 0x01.
 };
 
-// 消息头.
+// Message header.
 struct MsgHead {
-  // 消息ID.
-  uint16_t msg_id;
-  // 消息体属性.
-  MsgBodyAttribute msgbody_attr;
-  // 终端手机号.
-  std::string phone_num;
-  // 消息流水号.
-  uint16_t msg_flow_num;
-  // 总包数, 分包情况下使用.
-  uint16_t total_packet;
-  // 当前包编号, 分包情况下使用.
-  uint16_t packet_seq;
+    // Message ID.
+    uint16_t msg_id;
+    // Message body attributes.
+    MsgBodyAttribute msgbody_attr;
+    // Terminal phone number.
+    std::string phone_num;
+    // Message flow number.
+    uint16_t msg_flow_num;
+    // Total number of packets, used in case of packet segmentation.
+    uint16_t total_packet;
+    // Current packet sequence number, used in case of packet segmentation.
+    uint16_t packet_seq;
 };
 
-// 注册信息.
+// Register information.
 struct RegisterInfo {
-  // 省域ID.
-  uint16_t province_id;
-  // 市县域ID.
-  uint16_t city_id;
-  // 制造商ID, 固定5个字节.
-  std::vector<uint8_t> manufacturer_id;
-  // 终端型号, 固定20个字节, 位数不足后补0x00.
-  std::vector<uint8_t> terminal_model;
-  // 终端ID, 固定7个字节, 位数不足后补0x00.
-  std::vector<uint8_t> terminal_id;
-  // 车牌颜色, 0表示未上牌.
-  uint8_t car_plate_color;
-  // 车辆标识, 仅在上牌时使用.
-  std::string car_plate_num;
-  // 重载拷贝赋值操作符.
-  void operator=(const RegisterInfo& info) {
-    province_id = info.province_id;
-    city_id = info.city_id;
-    manufacturer_id.clear();
-    manufacturer_id.assign(info.manufacturer_id.begin(),
-                           info.manufacturer_id.end());
-    terminal_model.clear();
-    terminal_model.assign(info.terminal_model.begin(),
-                           info.terminal_model.end());
-    terminal_id.clear();
-    terminal_id.assign(info.terminal_id.begin(), info.terminal_id.end());
-    car_plate_num.clear();
-    car_plate_color = info.car_plate_color;
-    if (car_plate_color != kVin) {
-      car_plate_num.assign(info.car_plate_num.begin(),
-                           info.car_plate_num.end());
+    // Province ID.
+    uint16_t province_id;
+    // City/County ID.
+    uint16_t city_id;
+    // Manufacturer ID, fixed 5 bytes.
+    std::vector<uint8_t> manufacturer_id;
+    // Terminal model, fixed 20 bytes, padded with 0x00 if insufficient.
+    std::vector<uint8_t> terminal_model;
+    // Terminal ID, fixed 7 bytes, padded with 0x00 if insufficient.
+    std::vector<uint8_t> terminal_id;
+    // Vehicle plate color, 0 means not registered.
+    uint8_t car_plate_color;
+    // Vehicle identification, used only when registered.
+    std::string car_plate_num;
+
+    // Overload copy assignment operator.
+    void operator=(RegisterInfo const& info) {
+        province_id = info.province_id;
+        city_id     = info.city_id;
+        manufacturer_id.clear();
+        manufacturer_id.assign(info.manufacturer_id.begin(), info.manufacturer_id.end());
+        terminal_model.clear();
+        terminal_model.assign(info.terminal_model.begin(), info.terminal_model.end());
+        terminal_id.clear();
+        terminal_id.assign(info.terminal_id.begin(), info.terminal_id.end());
+        car_plate_num.clear();
+        car_plate_color = info.car_plate_color;
+        if (car_plate_color != kVin) {
+            car_plate_num.assign(info.car_plate_num.begin(), info.car_plate_num.end());
+        }
     }
-  }
 };
 
-// 升级类型.
+// Upgrade type.
 enum kTerminalUpgradeType {
-  // 终端.
-  kTerminal = 0x0,
-  // 道路运输证 IC 卡读卡器
-  kICCardReader = 0xc,
-  // 北斗卫星定位模块.
-  kGNSS = 0x34,
+    // Terminal.
+    kTerminal = 0x0,
+    // Road transport certificate IC card reader.
+    kICCardReader = 0xc,
+    // Beidou satellite positioning module.
+    kGNSS = 0x34,
 };
 
-// 升级结果.
+// Upgrade result.
 enum kTerminalUpgradeResultType {
-  // 终端升级成功.
-  kTerminalUpgradeSuccess = 0x0,
-  // 终端升级失败.
-  kTerminalUpgradeFailed,
-  // 终端升级取消.
-  kTerminalUpgradeCancel
+    // Terminal upgrade success.
+    kTerminalUpgradeSuccess = 0x0,
+    // Terminal upgrade failure.
+    kTerminalUpgradeFailed,
+    // Terminal upgrade canceled.
+    kTerminalUpgradeCancel
 };
 
-// 升级信息.
+// Upgrade information.
 struct UpgradeInfo {
-  // 升级类型.
-  uint8_t upgrade_type;
-  // 升级结果.
-  uint8_t upgrade_result;
-  // 制造商ID, 固定5个字节.
-  std::vector<uint8_t> manufacturer_id;
-  // 升级版本号.
-  std::string version_id;
-   // 升级包总长度.
-  uint32_t upgrade_data_total_len;
-  // 升级数据包.
-  std::vector<uint8_t> upgrade_data;
+    // Upgrade type.
+    uint8_t upgrade_type;
+    // Upgrade result.
+    uint8_t upgrade_result;
+    // Manufacturer ID, fixed 5 bytes.
+    std::vector<uint8_t> manufacturer_id;
+    // Upgrade version number.
+    std::string version_id;
+    // Total length of upgrade package.
+    uint32_t upgrade_data_total_len;
+    // Upgrade data package.
+    std::vector<uint8_t> upgrade_data;
 };
 
-// 补传分包信息.
+// Fill packet information.
 struct FillPacket {
-  // 分包数据首包的消息流水号.
-  uint16_t first_packet_msg_flow_num;
-  // 需要重传包的ID.
-  std::vector<uint16_t> packet_id;
+    // Message flow number of the first packet of the sub-packet data.
+    uint16_t first_packet_msg_flow_num;
+    // IDs of packets that need to be retransmitted.
+    std::vector<uint16_t> packet_id;
 };
 
-// 协议所有参数.
+struct DriverIdentityInformation {
+    uint8_t     status;                  // from 0 size 1 byte
+    std::string time;                    // from 1 bcd 6 bytes
+    uint8_t     read_result;             // from 7 size 1 byte
+    uint8_t     driver_name_len;         // from 8 size 1 byte
+    std::string driver_name;             // from 9 size driver_name_len bytes
+    std::string driver_license;          // from 9+driver_name_len size 20 bits
+    uint8_t     issuing_agency_name_len; // from 29+driver_name_len size 1 byte
+    std::string issuing_agency_name;     // from 30+driver_name_len size issuing_agency_name_len bytes
+    std::string driver_license_validity; // from 30+driver_name_len+issuing_agency_name_len bcd 4 bytes
+};
+
+// All protocol parameters.
 struct ProtocolParameter {
-  uint8_t respone_result;
-  uint16_t respone_msg_id;
-  uint16_t respone_flow_num;
-  // 消息头.
-  MsgHead msg_head;
-  // 终端注册时需填充注册信息.
-  RegisterInfo register_info;
-  // 平台随机生成鉴权码.
-  std::vector<uint8_t> authentication_code;
-  // 设置终端参数项.
-  TerminalParameters terminal_parameters;
-  // 查询终端参数ID列表.
-  std::vector<uint32_t> terminal_parameter_ids;
-  // 位置上报时填充位置基本信息, 必须项.
-  LocationBasicInformation location_info;
-  // 位置上报时填充位置附加信息, 可选项.
-  LocationExtensions location_extension;
-  // 临时位置跟踪控制信息.
-  LocationTrackingControl location_tracking_control;
-  // 多边形区域集.
-  // PolygonAreaSet polygon_area_set;
-  // 多边形区域.
-  PolygonArea polygon_area;
-  // 删除多边形区域ID集.
-  std::vector<uint32_t> polygon_area_id;
-  // 升级信息.
-  UpgradeInfo upgrade_info;
-  // 补传分包信息.
-  struct FillPacket fill_packet;
-  // 多媒体数据上传.
-  MultiMediaDataUpload multimedia_upload;
-  // 多媒体数据上传应答.
-  MultiMediaDataUploadResponse multimedia_upload_response;
-  // 保留字段.
-  std::vector<uint8_t> retain;
-  // 用于解析消息.
-  struct {
-    uint8_t respone_result;
+    uint8_t  respone_result;
     uint16_t respone_msg_id;
     uint16_t respone_flow_num;
-    // 解析出的消息头.
+    // Message header.
     MsgHead msg_head;
-    // 解析出的注册信息.
+    // Register information to be filled in when the terminal is registered.
     RegisterInfo register_info;
-    // 解析出的鉴权码.
+    // Authentication code randomly generated by the platform.
     std::vector<uint8_t> authentication_code;
-    // 解析出的设置终端参数项.
+    // Set terminal parameter items.
     TerminalParameters terminal_parameters;
-    // 解析出的查询终端参数ID列表.
+    // List of terminal parameter IDs to query.
     std::vector<uint32_t> terminal_parameter_ids;
-    // 解析出的位置基本信息.
+    // Basic location information to be filled in when reporting location, mandatory.
     LocationBasicInformation location_info;
-    // 解析出的位置附加信息.
+    // Additional location information to be filled in when reporting location, optional.
     LocationExtensions location_extension;
-    // 解析出的临时位置跟踪控制信息.
+    // Temporary location tracking control information.
     LocationTrackingControl location_tracking_control;
-    // 解析出的多边形区域集.
+    // Polygon area set.
     // PolygonAreaSet polygon_area_set;
-    // 解析出的多边形区域.
+    // Polygon area.
     PolygonArea polygon_area;
-    // 解析出的删除多边形区域ID集.
+    // Set of polygon area IDs to be deleted.
     std::vector<uint32_t> polygon_area_id;
-    // 解析出的升级信息.
+    // Upgrade information.
     UpgradeInfo upgrade_info;
-    // 解析出的补传分包信息.
+    // Fill packet information.
     struct FillPacket fill_packet;
-    // 解析出的多媒体数据上传.
+    // Multimedia data upload.
     MultiMediaDataUpload multimedia_upload;
-    // 解析出的多媒体数据上传应答.
+    // Multimedia data upload response.
     MultiMediaDataUploadResponse multimedia_upload_response;
-    // 解析出的保留字段.
+    // Reserved fields.
     std::vector<uint8_t> retain;
-  }parse;
+
+    //* Additional fields.
+    // Driver identity information.
+    DriverIdentityInformation driver_info;
+
+    // Used to parse messages.
+    struct {
+        uint8_t  respone_result;
+        uint16_t respone_msg_id;
+        uint16_t respone_flow_num;
+        // Parsed message header.
+        MsgHead msg_head;
+        // Parsed register information.
+        RegisterInfo register_info;
+        // Parsed authentication code.
+        std::vector<uint8_t> authentication_code;
+        // Parsed set terminal parameter items.
+        TerminalParameters terminal_parameters;
+        // Parsed list of terminal parameter IDs to query.
+        std::vector<uint32_t> terminal_parameter_ids;
+        // Parsed basic location information.
+        LocationBasicInformation location_info;
+        // Parsed additional location information.
+        LocationExtensions location_extension;
+        // Parsed temporary location tracking control information.
+        LocationTrackingControl location_tracking_control;
+        // Parsed polygon area set.
+        // PolygonAreaSet polygon_area_set;
+        // Parsed polygon area.
+        PolygonArea polygon_area;
+        // Parsed set of polygon area IDs to be deleted.
+        std::vector<uint32_t> polygon_area_id;
+        // Parsed upgrade information.
+        UpgradeInfo upgrade_info;
+        // Parsed fill packet information.
+        struct FillPacket fill_packet;
+        // Parsed multimedia data upload.
+        MultiMediaDataUpload multimedia_upload;
+        // Parsed multimedia data upload response.
+        MultiMediaDataUploadResponse multimedia_upload_response;
+        // Parsed reserved fields.
+        std::vector<uint8_t> retain;
+
+        //* Additional fields.
+        // Parsed driver identity information.
+        DriverIdentityInformation driver_info;
+
+    } parse;
 };
 
-}  // namespace libjt808
+} // namespace libjt808
 
-#endif  // JT808_PROTOCOL_PARAMETER_H_
+#endif // JT808_PROTOCOL_PARAMETER_H_

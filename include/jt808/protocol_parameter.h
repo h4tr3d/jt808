@@ -67,6 +67,7 @@ enum SupportedCommands {
 
     // Additional commands.
     kDriverIdentityInformation = 0x0702, // Driver identity information.
+    kDrivingLicenseData        = 0x0252, // Driving license data.
 };
 
 // All response commands.
@@ -241,6 +242,18 @@ struct DriverIdentityInformation {
     std::string driver_license_validity; // from 30+driver_name_len+issuing_agency_name_len bcd 4 bytes
 };
 
+struct DrivingLicenseData {
+    std::string driver_name;
+    std::string unknown_data_1; // Country code or something related to Thailand country ?
+    std::string driver_citizen_id;
+    std::string unknown_data_2;
+    std::string dob; // Date of birth yyyymmdd
+    std::string license_type;
+    std::string driver_gender;
+    std::string driver_license_id;
+    std::string government_agency;
+};
+
 // All protocol parameters.
 struct ProtocolParameter {
     uint8_t  respone_result;
@@ -280,8 +293,8 @@ struct ProtocolParameter {
     std::vector<uint8_t> retain;
 
     //* Additional fields.
-    // Driver identity information.
-    DriverIdentityInformation driver_info;
+    DriverIdentityInformation driver_info;  // Driver identity information.
+    DrivingLicenseData        license_data; // Driving license data.
 
     // Used to parse messages.
     struct {
@@ -322,8 +335,8 @@ struct ProtocolParameter {
         std::vector<uint8_t> retain;
 
         //* Additional fields.
-        // Parsed driver identity information.
-        DriverIdentityInformation driver_info;
+        DriverIdentityInformation driver_info;  // Parsed driver identity information.
+        DrivingLicenseData        license_data; // Driving license data.
 
     } parse;
 };

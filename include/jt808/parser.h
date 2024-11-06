@@ -60,6 +60,23 @@ bool JT808FrameParserOverride(Parser* parser, std::pair<uint16_t, ParseHandler> 
 bool JT808FrameParserOverride(Parser* parser, uint16_t const& msg_id, ParseHandler const& handler);
 
 // Parse command.
+/**
+ * @brief Parses a JT808 frame.
+ *
+ * This function takes a parser, an input vector of bytes, and a protocol parameter
+ * structure pointer. It performs the following steps:
+ * 1. Checks if the protocol parameter pointer is null.
+ * 2. Performs reverse escape on the input vector.
+ * 3. Checks the XOR checksum of the resulting vector.
+ * 4. Parses the message header from the resulting vector.
+ * 5. Sets the phone number in the protocol parameter structure.
+ * 6. Finds the message ID in the parser and calls the corresponding function.
+ *
+ * @param parser The parser containing message ID to function mappings.
+ * @param in The input vector of bytes to be parsed.
+ * @param para The protocol parameter structure pointer to store parsed data.
+ * @return int Returns 0 on success, -1 on failure.
+ */
 int JT808FrameParse(Parser const& parser, std::vector<uint8_t> const& in, ProtocolParameter* para);
 
 } // namespace libjt808

@@ -252,6 +252,7 @@ struct DrivingLicenseData {
     std::string driver_gender;
     std::string driver_license_id;
     std::string government_agency;
+    std::string track_3_raw_data;
 };
 
 // All protocol parameters.

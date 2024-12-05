@@ -312,6 +312,16 @@ public:
     // Only called when external control of location reporting is enabled.
     void GenerateLocationReportMsgNow(void);
 
+    /**
+     * @brief Packages and sends the driving license data.
+     *
+     * This method packages the driving license data and sends it to the server.
+     *
+     * @param license_data The driving license data to be sent.
+     * @return An integer indicating the success or failure of the operation.
+     */
+    int SendDrivingLicenseData(DrivingLicenseData const& license_data);
+
     //
     // Terminal parameter related.
     //

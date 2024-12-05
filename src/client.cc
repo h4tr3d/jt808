@@ -317,6 +317,26 @@ void JT808Client::GenerateLocationReportMsgNow(void) {
   location_report_msg_.push_back(std::move(msg));
 }
 
+int JT808Client::SendDrivingLicenseData(DrivingLicenseData const& license_data) {
+    // Package the driving license data into the protocol parameter
+    parameter_.license_data = license_data;
+
+    // Generate the message
+    std::vector<uint8_t> msg;
+    if (PackagingMessage(kDrivingLicenseData, &msg) < 0) {
+        printf("%s[%d]: Package message failed !!!\n", __FUNCTION__, __LINE__);
+        return -1;
+    }
+
+    // Send the message
+    if (Send(client_, reinterpret_cast<char*>(msg.data()), msg.size(), 0) <= 0) {
+        printf("%s[%d]: Send message failed !!!\n", __FUNCTION__, __LINE__);
+        return -1;
+    }
+
+    return 0;
+}
+
 int JT808Client::MultimediaUpload(char const* path,
     std::vector<uint8_t> const& location_basic) {
   std::ifstream ifs;

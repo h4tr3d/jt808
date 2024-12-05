@@ -66,7 +66,6 @@ enum SupportedCommands {
     kMultimediaDataUploadResponse   = 0x8800, // Multimedia data upload response.
 
     // Additional commands.
-    kDriverIdentityInformation = 0x0702, // Driver identity information.
     kDrivingLicenseData        = 0x0252, // Driving license data.
 };
 
@@ -230,29 +229,39 @@ struct FillPacket {
     std::vector<uint16_t> packet_id;
 };
 
-struct DriverIdentityInformation {
-    uint8_t     status;                  // from 0 size 1 byte
-    std::string time;                    // from 1 bcd 6 bytes
-    uint8_t     read_result;             // from 7 size 1 byte
-    uint8_t     driver_name_len;         // from 8 size 1 byte
-    std::string driver_name;             // from 9 size driver_name_len bytes
-    std::string driver_license;          // from 9+driver_name_len size 20 bits
-    uint8_t     issuing_agency_name_len; // from 29+driver_name_len size 1 byte
-    std::string issuing_agency_name;     // from 30+driver_name_len size issuing_agency_name_len bytes
-    std::string driver_license_validity; // from 30+driver_name_len+issuing_agency_name_len bcd 4 bytes
+/**
+ * @brief Structure to hold driver's card information.
+ *
+ * This structure contains various fields related to the driver's card information,
+ * including the driver's name, country code, citizen ID, expiration date, date of birth,
+ * license type, gender, license ID, issuing branch, and track information.
+ */
+struct CardInfo {
+    std::string name;           // Driver's name
+    std::string country;        // Country code
+    std::string citizen_id;     // Driver's citizen ID
+    std::string expire_date;    // Expiration date yymm
+    std::string dob;            // Date of birth yyyymmdd
+    std::string license_type;   // Driving License type
+    std::string gender;         // Driver's gender
+    std::string license_id;     // Driver's license ID
+    std::string issuing_branch; // Issuing branch
+    std::string track;     // License Track 1-3 raw data
+    //* Example of track data (track 1-3):
+    //* "%  ^CHATURAPHATSIRIKUN$IDSARAWAT$MR.^^?;6007643959900137864=270319800301=?+"
+    //* "             2400          1            65007168  00100                     ?"
 };
 
+/**
+ * @brief Structure to hold driving license data.
+ *
+ * This structure contains various fields related to the driving license data,
+ * including card information, login status, and driving license data upload permission flag.
+ */
 struct DrivingLicenseData {
-    std::string driver_name;
-    std::string unknown_data_1; // Country code or something related to Thailand country ?
-    std::string driver_citizen_id;
-    std::string unknown_data_2;
-    std::string dob; // Date of birth yyyymmdd
-    std::string license_type;
-    std::string driver_gender;
-    std::string driver_license_id;
-    std::string government_agency;
-    std::string track_info; // License Track 1-3 raw data, ex. "%  ^CHATURAPHATSIRIKUN$IDSARAWAT$MR.^^?;6007643959900137864=270319800301=?+             2400          1            65007168  00100                     ?"
+    CardInfo card_info;     // Card information.
+    uint8_t  login_sts;     // Login status. 0: logout, 1: login
+    uint8_t  dlt_allow_flg; // Driving license data upload permission flag. 0: not allowed, 1: allowed
 };
 
 // All protocol parameters.
@@ -294,7 +303,6 @@ struct ProtocolParameter {
     std::vector<uint8_t> retain;
 
     //* Additional fields.
-    DriverIdentityInformation driver_info;  // Driver identity information.
     DrivingLicenseData        license_data; // Driving license data.
 
     // Used to parse messages.
@@ -336,7 +344,6 @@ struct ProtocolParameter {
         std::vector<uint8_t> retain;
 
         //* Additional fields.
-        DriverIdentityInformation driver_info;  // Parsed driver identity information.
         DrivingLicenseData        license_data; // Driving license data.
 
     } parse;

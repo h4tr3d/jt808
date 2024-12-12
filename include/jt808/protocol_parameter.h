@@ -65,9 +65,9 @@ enum SupportedCommands {
     kMultimediaDataUpload           = 0x0801, // Multimedia data upload.
     kMultimediaDataUploadResponse   = 0x8800, // Multimedia data upload response.
 
-    // Additional supported commands.
-    kVersionInformation = 0x0205, // Version information.
-    kDrivingLicenseData = 0x0252, // Driving license data.
+    //* Additional supported commands.
+    kVersionInformation = 0x0205, ///< Version information.
+    kDrivingLicenseData = 0x0252, ///< Driving license data.
 };
 
 // All response commands.
@@ -238,17 +238,17 @@ struct FillPacket {
  * about the version, release date, and other identifiers for a device.
  */
 struct VersionInformation {
-    std::string          version;  // Version number. e.g., "HBT530CVMFF2D1"
-    std::string          rel_date; // Release date. e.g., "2020-06-24"
-    std::vector<uint8_t> cpu_id;   // CPU ID number
-    std::string          model;
-    std::string          imei;
-    std::string          imsi;
-    std::string          iccid;
-    uint16_t             car_model;   // Car model id
-    std::string          vin;         // Vehicle identification number
-    uint32_t             tot_mileage; // Total mileage
-    uint32_t             tot_fuel;    // Total fuel consumption
+    std::string          version;     ///< Version number. e.g., "HBT530CVMFF2D1"
+    std::string          rel_date;    ///< Release date. e.g., "2020-06-24"
+    std::vector<uint8_t> cpu_id;      ///< CPU ID number. e.g. "FDFF0200FF7F008050110136" in byte array
+    std::string          model;       ///< Model number. e.g., "EC200U"
+    std::string          imei;        ///< IMEI number. e.g., "864714067557109"
+    std::string          imsi;        ///< IMSI number. e.g., "520031008795627"
+    std::string          iccid;       ///< ICCID number. e.g., "8966032421096431741F"
+    uint16_t             car_model;   ///< Car model number. e.g., 61526
+    std::string          vin;         ///< Vehicle identification number
+    uint32_t             tot_mileage; ///< Total mileage
+    uint32_t             tot_fuel;    ///< Total fuel consumption
 };
 
 /**
@@ -259,16 +259,16 @@ struct VersionInformation {
  * license type, gender, license ID, issuing branch, and track information.
  */
 struct CardInfo {
-    std::string name;           // Driver's name
-    std::string country;        // Country code
-    std::string citizen_id;     // Driver's citizen ID
-    std::string expire_date;    // Expiration date yymm
-    std::string dob;            // Date of birth yyyymmdd
-    std::string license_type;   // Driving License type
-    std::string gender;         // Driver's gender
-    std::string license_id;     // Driver's license ID
-    std::string issuing_branch; // Issuing branch
-    std::string track;          // License Track 1-3 raw data
+    std::string name;           ///< Driver's name
+    std::string country;        ///< Country code
+    std::string citizen_id;     ///< Driver's citizen ID
+    std::string expire_date;    ///< Expiration date yymm
+    std::string dob;            ///< Date of birth yyyymmdd
+    std::string license_type;   ///< Driving License type
+    std::string gender;         ///< Driver's gender
+    std::string license_id;     ///< Driver's license ID
+    std::string issuing_branch; ///< Issuing branch
+    std::string track;          ///< License Track 1-3 raw data
     //* Example of track data (track 1-3):
     //* "%  ^CHATURAPHATSIRIKUN$IDSARAWAT$MR.^^?;6007643959900137864=270319800301=?+"
     //* "             2400          1            65007168  00100                     ?"
@@ -281,9 +281,9 @@ struct CardInfo {
  * including card information, login status, and driving license data upload permission flag.
  */
 struct DrivingLicenseData {
-    CardInfo card_info;     // Card information.
-    uint8_t  login_sts;     // Login status. 0: logout, 1: login
-    uint8_t  dlt_allow_flg; // Driving license data upload permission flag. 0: not allowed, 1: allowed
+    CardInfo card_info;     ///< Card information.
+    uint8_t  login_sts;     ///< Login status. 0: logout, 1: login
+    uint8_t  dlt_allow_flg; ///< Driving license data upload permission flag. 0: not allowed, 1: allowed
 };
 
 // ---------- (00) MAIN PACKAGE (PROTOCOL PARAMETER) -------------------------------------------- //
@@ -326,8 +326,8 @@ struct ProtocolParameter {
     std::vector<uint8_t> retain;
 
     //* Additional fields.
-    VersionInformation version_info; // Version information.
-    DrivingLicenseData license_data; // Driving license data.
+    VersionInformation version_info; ///< Version information.
+    DrivingLicenseData license_data; ///< Driving license data.
 
     // Used to parse messages.
     struct {
@@ -368,9 +368,8 @@ struct ProtocolParameter {
         std::vector<uint8_t> retain;
 
         //* Additional fields.
-        VersionInformation version_info; // Version information.
-        DrivingLicenseData license_data; // Driving license data.
-
+        VersionInformation version_info; ///< Version information.
+        DrivingLicenseData license_data; ///< Driving license data.
     } parse;
 };
 

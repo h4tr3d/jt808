@@ -66,8 +66,10 @@ enum SupportedCommands {
     kMultimediaDataUploadResponse   = 0x8800, // Multimedia data upload response.
 
     //* Additional supported commands.
-    kVersionInformation = 0x0205, ///< Version information.
-    kDrivingLicenseData = 0x0252, ///< Driving license data.
+    kVersionInformation  = 0x0205, ///< Version information.
+    kDrivingLicenseData  = 0x0252, ///< Driving license data.
+    kBatchLocationReport = 0x0704, ///< Batch location report.
+    kCANBroadcastData    = 0x0705, ///< CAN broadcast data.
 };
 
 // All response commands.
@@ -286,6 +288,28 @@ struct DrivingLicenseData {
     uint8_t  dlt_allow_flg; ///< Driving license data upload permission flag. 0: not allowed, 1: allowed
 };
 
+/**
+ * @brief Structure to hold CAN information.
+ *
+ * This structure contains the CAN ID and the associated CAN data.
+ */
+struct CANInfo {
+    uint32_t             id;   ///< CAN ID (DWORD)
+    std::vector<uint8_t> data; ///< CAN data
+};
+
+/**
+ * @brief Structure to hold CAN broadcast data.
+ *
+ * This structure contains the number of data entries, the receiving time,
+ * and the CAN information including the CAN ID and CAN data.
+ */
+struct CANBroadcastData {
+    uint16_t    nbr_of_data; ///< Number of data
+    std::string recv_time;   ///< Receiving time, hh mm ss msms
+    CANInfo     can_info;    ///< CAN information
+};
+
 // ---------- (00) MAIN PACKAGE (PROTOCOL PARAMETER) -------------------------------------------- //
 // All protocol parameters.
 struct ProtocolParameter {
@@ -328,6 +352,7 @@ struct ProtocolParameter {
     //* Additional fields.
     VersionInformation version_info; ///< Version information.
     DrivingLicenseData license_data; ///< Driving license data.
+    CANBroadcastData   can_data;     ///< CAN broadcast data.
 
     // Used to parse messages.
     struct {
@@ -370,6 +395,7 @@ struct ProtocolParameter {
         //* Additional fields.
         VersionInformation version_info; ///< Version information.
         DrivingLicenseData license_data; ///< Driving license data.
+        CANBroadcastData   can_data;     ///< CAN broadcast data.
     } parse;
 };
 

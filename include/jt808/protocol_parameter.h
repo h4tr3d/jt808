@@ -306,7 +306,7 @@ struct CANInfo {
  */
 struct CANBroadcastData {
     uint16_t    nbr_of_data; ///< Number of data
-    std::string recv_time;   ///< Receiving time, hh mm ss msms
+    std::string recv_time;   ///< Receiving time (ISO8601 format)
     CANInfo     can_info;    ///< CAN information
 };
 

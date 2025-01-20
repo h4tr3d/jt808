@@ -39,6 +39,10 @@
 #include "jt808/multimedia_upload.h"
 
 namespace libjt808 {
+// Type definition.
+typedef uint8_t  BYTE;  // 1 byte.
+typedef uint16_t WORD;  // 2 bytes.
+typedef uint32_t DWORD; // 4 bytes.
 
 // Supported protocol commands.
 enum SupportedCommands {
@@ -68,7 +72,7 @@ enum SupportedCommands {
     //* Additional supported commands.
     kVersionInformation  = 0x0205, ///< Version information.
     kDrivingLicenseData  = 0x0252, ///< Driving license data.
-    kBatchLocationReport = 0x0704, ///< Batch location report.
+    kBatchLocationReport = 0x0704, ///< Batch location information.
     kCANBroadcastData    = 0x0705, ///< CAN broadcast data.
 };
 
@@ -288,6 +292,18 @@ struct DrivingLicenseData {
     uint8_t  dlt_allow_flg; ///< Driving license data upload permission flag. 0: not allowed, 1: allowed
 };
 
+// struct BatchLocationInformation {
+//     uint16_t                 len;      ///< Length of location information (WORD)
+//     LocationBasicInformation loc_info; ///< Location information
+// };
+
+struct BatchLocationReport {
+    uint16_t nbr_of_dat; ///< Number of data (WORD)
+    uint8_t  data_type;  ///< Data type (BYTE), 0: normal batch data, 1: blind spot report data
+    std::vector<LocationBasicInformation> loc_info; ///< Location data
+    std::vector<LocationExtensions>       loc_ext;  ///< Location extension data
+};
+
 /**
  * @brief Structure to hold CAN information.
  *
@@ -306,7 +322,7 @@ struct CANInfo {
  */
 struct CANBroadcastData {
     uint16_t    nbr_of_dat; ///< Number of data
-    std::string recv_tm;  ///< Receiving time (ISO8601 format)
+    std::string recv_tm;    ///< Receiving time (ISO8601 format)
     CANInfo     can_info;   ///< CAN information
 };
 
@@ -350,9 +366,10 @@ struct ProtocolParameter {
     std::vector<uint8_t> retain;
 
     //* Additional fields.
-    VersionInformation version_info; ///< Version information.
-    DrivingLicenseData license_data; ///< Driving license data.
-    CANBroadcastData   can_data;     ///< CAN broadcast data.
+    VersionInformation  version_info; ///< Version information.
+    DrivingLicenseData  license_data; ///< Driving license data.
+    BatchLocationReport batch_loc;    ///< Batch location information report.
+    CANBroadcastData    can_data;     ///< CAN broadcast data.
 
     // Used to parse messages.
     struct {
@@ -393,9 +410,10 @@ struct ProtocolParameter {
         std::vector<uint8_t> retain;
 
         //* Additional fields.
-        VersionInformation version_info; ///< Version information.
-        DrivingLicenseData license_data; ///< Driving license data.
-        CANBroadcastData   can_data;     ///< CAN broadcast data.
+        VersionInformation  version_info; ///< Version information.
+        DrivingLicenseData  license_data; ///< Driving license data.
+        BatchLocationReport batch_loc;    ///< Batch location information report.
+        CANBroadcastData    can_data;     ///< CAN broadcast data.
     } parse;
 };
 

@@ -237,8 +237,38 @@ enum LocationExtensionId {
     kGnssSatellites = 0x31,
     // Length of subsequent custom information, BYTE
     kCustomInformationLength = 0xE0,
+    // Basic Data flow
+    kBasicDataFlow = 0xEA,
     // Positioning solution status, BYTE
     kPositioningStatus = 0xEE
+};
+
+/**
+ * @enum BasicDataFlowID
+ * @brief Enumeration of Basic Data Flow IDs.
+ *
+ * This enumeration defines the sub-IDs used in the Basic Data Flow packet. Each sub-ID corresponds to a specific
+ * type of data that can be extracted from the packet.
+ */
+enum BasicDataFlowID {
+    kTotalMileage           = 0x0003, ///< Total mileage format
+    kTotalFuelConsumption   = 0x0004, ///< Total fuel consumption
+    kTotalEngineRunningTime = 0x0005, ///< Total engine running time, seconds
+    kTotalFlameoutTime      = 0x0006, ///< Total vehicle shutdown time
+    kTotalIdleTime          = 0x0007, ///< Total vehicle idle time
+    kAccelerometerData      = 0x0010, ///< Accelerometer data
+    kVehicleStatus          = 0x0011, ///< Vehicle status table
+    kExternalVoltage        = 0x0012, ///< External power supply voltage, 0.1V
+    kBuildInBattVoltage     = 0x0013, ///< Built-in battery voltage, 0.1V
+    kCSQ                    = 0x0014, ///< Network signal strength
+    kModelID                = 0x0015, ///< Model ID
+    kOBDType                = 0x0016, ///< OBD type
+    kDriveCycle             = 0x0017, ///< Drive cycle
+    kGPSSatelliteNumber     = 0x0018, ///< Number of GPS satellites
+    kGPSLocationAccuracy    = 0x0019, ///< GPS location accuracy, 0.01
+    kGPSAvgSNR              = 0x001A, ///< Signal-to-noise ratio, db
+    kIgnitionType           = 0x0020, ///< Ignition type
+    kCarbonEmissions        = 0x0021, ///< Carbon emissions, g
 };
 
 // Definition of location information additional items storage: key: itemid, value: itemvalue.

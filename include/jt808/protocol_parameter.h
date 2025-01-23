@@ -321,9 +321,9 @@ struct CANInfo {
  * and the CAN information including the CAN ID and CAN data.
  */
 struct CANBroadcastData {
-    uint16_t    nbr_of_dat; ///< Number of data
-    std::string recv_tm;    ///< Receiving time (ISO8601 format)
-    CANInfo     can_info;   ///< CAN information
+    uint16_t             nbr_of_dat; ///< Number of data
+    std::string          recv_tm;    ///< Receiving time (ISO8601 format)
+    std::vector<CANInfo> can_info;   ///< List of CAN information
 };
 
 // ---------- (00) MAIN PACKAGE (PROTOCOL PARAMETER) -------------------------------------------- //

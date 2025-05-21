@@ -86,7 +86,7 @@ int ConnectEmulator(void) {
   //
   cli_para.msg_head.msg_id = 0x0100;
   std::vector<uint8_t> out;
-  if (libjt808::JT808FramePackage(packager, cli_para, &out) < 0) {
+  if (libjt808::JT808FramePackage(packager, cli_para, out) < 0) {
     printf("Generate register message failed\n");
     return -1;
   }
@@ -139,7 +139,7 @@ int ConnectEmulator(void) {
   for (auto& ch : tmp) svr_para.authentication_code.push_back(ch);
   svr_para.msg_head.msg_id = 0x8100;
   svr_para.respone_result = 0;  // 应答结果: 成功.
-  if (libjt808::JT808FramePackage(packager, svr_para, &out) < 0) {
+  if (libjt808::JT808FramePackage(packager, svr_para, out) < 0) {
     printf("Generate register respone message failed\n");
     return -1;
   }
@@ -168,7 +168,7 @@ int ConnectEmulator(void) {
   // 终端生成终端鉴权消息.
   //
   cli_para.msg_head.msg_id = 0x0102;
-  if (libjt808::JT808FramePackage(packager, cli_para, &out) < 0) {
+  if (libjt808::JT808FramePackage(packager, cli_para, out) < 0) {
     printf("Generate authentication message failed\n");
     return -1;
   }
@@ -198,7 +198,7 @@ int ConnectEmulator(void) {
   //
   svr_para.msg_head.msg_id = 0x8001;
   svr_para.respone_result = 0;  // 应答结果: 成功.
-  if (libjt808::JT808FramePackage(packager, svr_para, &out) < 0) {
+  if (libjt808::JT808FramePackage(packager, svr_para, out) < 0) {
     printf("Generate authentication respone message failed\n");
     return -1;
   }

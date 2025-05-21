@@ -57,7 +57,7 @@ void RegistePackage(libjt808::Packager const& packager) {
     parameter.register_info.terminal_id.assign(kTerminalId, kTerminalId + sizeof(kTerminalId));
     parameter.register_info.car_plate_color = libjt808::VehiclePlateColor::kBlue;
     parameter.register_info.car_plate_num   = "粤B99999";
-    libjt808::JT808FramePackage(packager, parameter, &raw_msg);
+    libjt808::JT808FramePackage(packager, parameter, raw_msg);
     printf("raw msg: ");
     for (auto& uch : raw_msg)
         printf("%02X ", uch);
@@ -84,7 +84,7 @@ void LocaltionReportPackage(libjt808::Packager const& packager) {
     parameter.location_extension.insert(std::pair<uint8_t, std::vector<uint8_t>>(0x31, std::vector<uint8_t> {11}));
     parameter.location_extension.insert(std::pair<uint8_t, std::vector<uint8_t>>(0xE0, std::vector<uint8_t> {1}));
     parameter.location_extension.insert(std::pair<uint8_t, std::vector<uint8_t>>(0xEE, std::vector<uint8_t> {2}));
-    if (libjt808::JT808FramePackage(packager, parameter, &raw_msg) == 0) {
+    if (libjt808::JT808FramePackage(packager, parameter, raw_msg) == 0) {
         printf("raw msg: ");
         for (auto& uch : raw_msg)
             printf("0x%02X, ", uch);

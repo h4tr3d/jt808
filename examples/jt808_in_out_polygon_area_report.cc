@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
   libjt808::LocationPoint location_point {114.099322,  22.543607, 0.0};
   SetPolygonArea(0x0001, location_point, &svr_para.polygon_area);
   svr_para.msg_head.msg_id = libjt808::kSetPolygonArea;
-  if (libjt808::JT808FramePackage(jt808_packager, svr_para, &out) < 0) {
+  if (libjt808::JT808FramePackage(jt808_packager, svr_para, out) < 0) {
     printf("Generate message failed\n");
     return -1;
   }
@@ -202,7 +202,7 @@ int main(int argc, char **argv) {
   location_point.longitude = 114.098783;
   location_point.latitude = 22.543598;
   SetPolygonArea(0x0002, location_point, &svr_para.polygon_area);
-  if (libjt808::JT808FramePackage(jt808_packager, svr_para, &out) < 0) {
+  if (libjt808::JT808FramePackage(jt808_packager, svr_para, out) < 0) {
     printf("Generate message failed\n");
     return -1;
   }
@@ -217,7 +217,7 @@ int main(int argc, char **argv) {
   location_point.longitude = 114.096877;
   location_point.latitude = 22.543537;
   SetPolygonArea(0x0003, location_point, &svr_para.polygon_area);
-  if (libjt808::JT808FramePackage(jt808_packager, svr_para, &out) < 0) {
+  if (libjt808::JT808FramePackage(jt808_packager, svr_para, out) < 0) {
     printf("Generate message failed\n");
     return -1;
   }
@@ -326,7 +326,7 @@ int main(int argc, char **argv) {
       cli_para.location_extension.insert(std::make_pair(
           libjt808::kPositioningStatus, std::vector<uint8_t>{temp}));
       cli_para.msg_head.msg_id = libjt808::kLocationReport;
-      if (libjt808::JT808FramePackage(jt808_packager, cli_para, &out) < 0) {
+      if (libjt808::JT808FramePackage(jt808_packager, cli_para, out) < 0) {
         printf("Generate message failed\n");
         return;
       }
@@ -390,7 +390,7 @@ int main(int argc, char **argv) {
   svr_para.polygon_area_id.push_back(0x0002);
   svr_para.polygon_area_id.push_back(0x0003);
   svr_para.msg_head.msg_id = libjt808::kDeletePolygonArea;
-  if (libjt808::JT808FramePackage(jt808_packager, svr_para, &out) < 0) {
+  if (libjt808::JT808FramePackage(jt808_packager, svr_para, out) < 0) {
     printf("Generate message failed\n");
     return -1;
   }

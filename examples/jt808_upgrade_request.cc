@@ -125,7 +125,7 @@ int main(int argc, char **argv) {
       // svr_para.msg_head.msgbody_attr.bit.packet = 1;  // 进行分包.
       // 平台生成下发终端升级包消息.
       svr_para.msg_head.msg_id = libjt808::kTerminalUpgrade;
-      if (libjt808::JT808FramePackage(jt808_packager, svr_para, &out) < 0) {
+      if (libjt808::JT808FramePackage(jt808_packager, svr_para, out) < 0) {
         printf("Generate message failed\n");
         return -1;
       }
@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
       // 终端接收到下发升级包, 使用终端通用应答回应.
       cli_para.msg_head.msg_id = libjt808::kTerminalGeneralResponse;
       cli_para.respone_result =libjt808::kSuccess;
-      if (libjt808::JT808FramePackage(jt808_packager, cli_para, &out) < 0) {
+      if (libjt808::JT808FramePackage(jt808_packager, cli_para, out) < 0) {
         printf("Generate message failed\n");
         return -1;
       }
@@ -182,7 +182,7 @@ int main(int argc, char **argv) {
       }
       // 终端生成补传分包请求消息.
       cli_para.msg_head.msg_id = libjt808::kFillPacketRequest;
-      if (libjt808::JT808FramePackage(jt808_packager, cli_para, &out) < 0) {
+      if (libjt808::JT808FramePackage(jt808_packager, cli_para, out) < 0) {
         printf("Generate message failed\n");
         return -1;
       }
@@ -210,7 +210,7 @@ int main(int argc, char **argv) {
         // 终端接收到下发升级包, 使用终端通用应答回应.
         cli_para.msg_head.msg_id = libjt808::kTerminalGeneralResponse;
         cli_para.respone_result =libjt808::kSuccess;
-        if (libjt808::JT808FramePackage(jt808_packager, cli_para, &out) < 0) {
+        if (libjt808::JT808FramePackage(jt808_packager, cli_para, out) < 0) {
           printf("Generate message failed\n");
           return -1;
         }
@@ -243,7 +243,7 @@ int main(int argc, char **argv) {
         buffer.get(), buffer.get()+length);
     // 生成升级消息.
     svr_para.msg_head.msg_id = libjt808::kTerminalUpgrade;
-    if (libjt808::JT808FramePackage(jt808_packager, svr_para, &out) < 0) {
+    if (libjt808::JT808FramePackage(jt808_packager, svr_para, out) < 0) {
       printf("Generate message failed\n");
       return -1;
     }
@@ -273,7 +273,7 @@ int main(int argc, char **argv) {
       cli_para.parse.upgrade_info.upgrade_type;
   cli_para.upgrade_info.upgrade_result = libjt808::kTerminalUpgradeSuccess;
   cli_para.msg_head.msg_id = libjt808::kTerminalUpgradeResultReport;
-  if (libjt808::JT808FramePackage(jt808_packager, cli_para, &out) < 0) {
+  if (libjt808::JT808FramePackage(jt808_packager, cli_para, out) < 0) {
     printf("Generate message failed\n");
     return -1;
   }

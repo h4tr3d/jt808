@@ -159,7 +159,7 @@ int main(int argc, char** argv) {
     }
     // Platform generates a message to set terminal parameters.
     svr_para.msg_head.msg_id = libjt808::kSetTerminalParameters;
-    if (libjt808::JT808FramePackage(jt808_packager, svr_para, &out) < 0) {
+    if (libjt808::JT808FramePackage(jt808_packager, svr_para, out) < 0) {
         printf("Generate message failed\n");
         return -1;
     }
@@ -179,7 +179,7 @@ int main(int argc, char** argv) {
     // Terminal generates a general response.
     cli_para.msg_head.msg_id = libjt808::kTerminalGeneralResponse;
     cli_para.respone_result  = libjt808::kSuccess;
-    if (libjt808::JT808FramePackage(jt808_packager, cli_para, &out) < 0) {
+    if (libjt808::JT808FramePackage(jt808_packager, cli_para, out) < 0) {
         printf("Generate message failed\n");
         return -1;
     }
@@ -189,7 +189,7 @@ int main(int argc, char** argv) {
     // printf("\n");
     // Platform generates a message to query terminal parameters.
     svr_para.msg_head.msg_id = libjt808::kGetTerminalParameters;
-    if (libjt808::JT808FramePackage(jt808_packager, svr_para, &out) < 0) {
+    if (libjt808::JT808FramePackage(jt808_packager, svr_para, out) < 0) {
         printf("Generate message failed\n");
         return -1;
     }
@@ -204,7 +204,7 @@ int main(int argc, char** argv) {
     }
     // Terminal generates a response message for querying terminal parameters.
     cli_para.msg_head.msg_id = libjt808::kGetTerminalParametersResponse;
-    if (libjt808::JT808FramePackage(jt808_packager, cli_para, &out) < 0) {
+    if (libjt808::JT808FramePackage(jt808_packager, cli_para, out) < 0) {
         printf("Generate message failed\n");
         return -1;
     }
@@ -232,7 +232,7 @@ int main(int argc, char** argv) {
     svr_para.terminal_parameter_ids.push_back(kNtripCorsMountPoint);
     svr_para.terminal_parameter_ids.push_back(kNtripCorsGGAReportInterval);
     svr_para.msg_head.msg_id = libjt808::kGetSpecificTerminalParameters;
-    if (libjt808::JT808FramePackage(jt808_packager, svr_para, &out) < 0) {
+    if (libjt808::JT808FramePackage(jt808_packager, svr_para, out) < 0) {
         printf("Generate message failed\n");
         return -1;
     }
@@ -253,7 +253,7 @@ int main(int argc, char** argv) {
     }
     // Terminal generates a response message for querying terminal parameters.
     cli_para.msg_head.msg_id = libjt808::kGetTerminalParametersResponse;
-    if (libjt808::JT808FramePackage(jt808_packager, cli_para, &out) < 0) {
+    if (libjt808::JT808FramePackage(jt808_packager, cli_para, out) < 0) {
         printf("Generate message failed\n");
         return -1;
     }

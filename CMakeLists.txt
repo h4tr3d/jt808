@@ -21,11 +21,24 @@ set(jt808_include_dirs ${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(SYSTEM ${jt808_include_dirs})
 
 aux_source_directory(src DIR_SRCS)
+set(HDRS include/jt808/multimedia_upload.h
+  include/jt808/bcd.h
+  include/jt808/protocol_parameter.h
+  include/jt808/socket_util.h
+  include/jt808/util.h
+  include/jt808/parser.h
+  include/jt808/packager.h
+  include/jt808/terminal_parameter.h
+  include/jt808/location_report.h
+  include/jt808/area_route.h
+  include/jt808/client.h
+  include/jt808/server.h
+)
 
 # add_subdirectory(nmeaparser)
 
 add_library(${PROJECT_NAME}
-  ${DIR_SRCS}
+  ${DIR_SRCS} ${HDRS}
 )
 
 if(WIN32)

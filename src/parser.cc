@@ -39,7 +39,7 @@ namespace libjt808 {
 namespace {
 
 // Parse message header.
-int JT808FrameHeadParse(std::vector<uint8_t> const& in, MsgHead* msg_head) {
+int JT808FrameHeadParse(InputBuffer in, MsgHead* msg_head) {
     if (msg_head == nullptr || in.size() < 15)
         return -1;
     // Message ID.
@@ -71,7 +71,7 @@ int JT808FrameHeadParse(std::vector<uint8_t> const& in, MsgHead* msg_head) {
 int JT808FrameParserInit(Parser* parser) {
     // 0x0001, Terminal general response.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kTerminalGeneralResponse, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kTerminalGeneralResponse, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             uint16_t pos = MSGBODY_NOPACKET_POS;
@@ -88,7 +88,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x8001, Platform general response.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kPlatformGeneralResponse, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kPlatformGeneralResponse, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             uint16_t pos = MSGBODY_NOPACKET_POS;
@@ -105,7 +105,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x0002, Terminal heartbeat.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kTerminalHeartBeat, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kTerminalHeartBeat, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             // Empty message body.
@@ -114,7 +114,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x8003, Fill packet request.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kFillPacketRequest, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kFillPacketRequest, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             auto const& msg_len = para->parse.msg_head.msgbody_attr.bit.msglen;
@@ -142,7 +142,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x0100, Terminal registration.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kTerminalRegister, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kTerminalRegister, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             uint16_t pos           = MSGBODY_NOPACKET_POS;
@@ -187,7 +187,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x8100, Terminal registration response.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kTerminalRegisterResponse, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kTerminalRegisterResponse, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             uint16_t pos = MSGBODY_NOPACKET_POS;
@@ -206,7 +206,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x0003, Terminal logout.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kTerminalLogOut, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kTerminalLogOut, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             // Empty message body.
@@ -215,7 +215,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x0102, Terminal authentication.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kTerminalAuthentication, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kTerminalAuthentication, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             uint16_t pos = MSGBODY_NOPACKET_POS;
@@ -230,7 +230,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x8103, Set terminal parameters.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kSetTerminalParameters, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kSetTerminalParameters, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             uint16_t pos = MSGBODY_NOPACKET_POS;
@@ -263,7 +263,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x8104, Query terminal parameters.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kGetTerminalParameters, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kGetTerminalParameters, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             // Used to distinguish whether it is a query for special terminal parameters.
@@ -274,7 +274,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x8106, Query specific terminal parameters.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kGetSpecificTerminalParameters, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kGetSpecificTerminalParameters, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             uint16_t pos = MSGBODY_NOPACKET_POS;
@@ -302,7 +302,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x0104, Query terminal parameters response.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kGetTerminalParametersResponse, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kGetTerminalParametersResponse, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             uint16_t pos = MSGBODY_NOPACKET_POS;
@@ -341,7 +341,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x8108, Issue terminal upgrade package.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kTerminalUpgrade, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kTerminalUpgrade, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             auto const& msg_len = para->parse.msg_head.msgbody_attr.bit.msglen;
@@ -377,7 +377,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x0108, Terminal upgrade result notification.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kTerminalUpgradeResultReport, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kTerminalUpgradeResultReport, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             uint16_t pos = MSGBODY_NOPACKET_POS;
@@ -393,7 +393,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x0200, Location information report.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kLocationReport, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kLocationReport, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             auto const& msg_len = para->parse.msg_head.msgbody_attr.bit.msglen;
@@ -448,7 +448,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x8201, Location information query.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kGetLocationInformation, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kGetLocationInformation, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             // Empty message body.
@@ -457,7 +457,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x0201, Location information query response.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kGetLocationInformationResponse, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kGetLocationInformationResponse, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             auto const& msg_len = para->parse.msg_head.msgbody_attr.bit.msglen;
@@ -516,7 +516,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x8202, Temporary location tracking control.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kLocationTrackingControl, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kLocationTrackingControl, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             auto const& msg_len = para->parse.msg_head.msgbody_attr.bit.msglen;
@@ -538,7 +538,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x08604, Set polygon area.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kSetPolygonArea, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kSetPolygonArea, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             auto const& msg_len = para->parse.msg_head.msgbody_attr.bit.msglen;
@@ -601,7 +601,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x08605, Delete polygon area.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kDeletePolygonArea, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kDeletePolygonArea, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             auto const& msg_len = para->parse.msg_head.msgbody_attr.bit.msglen;
@@ -625,7 +625,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x0801, Multimedia data upload.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kMultimediaDataUpload, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kMultimediaDataUpload, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             auto const& msg_len = para->parse.msg_head.msgbody_attr.bit.msglen;
@@ -651,7 +651,7 @@ int JT808FrameParserInit(Parser* parser) {
 
     // 0x8800, Multimedia data upload response.
     parser->insert(std::pair<uint16_t, ParseHandler>(
-        kMultimediaDataUploadResponse, [](std::vector<uint8_t> const& in, ProtocolParameter* para) -> int {
+        kMultimediaDataUploadResponse, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
                 return -1;
             auto const& msg_len = para->parse.msg_head.msgbody_attr.bit.msglen;
@@ -717,12 +717,13 @@ bool JT808FrameParserOverride(Parser* parser, uint16_t const& msg_id, ParseHandl
  * @param para The protocol parameter structure pointer to store parsed data.
  * @return int Returns 0 on success, -1 on failure.
  */
-int JT808FrameParse(Parser const& parser, std::vector<uint8_t> const& in, ProtocolParameter* para) {
+int JT808FrameParse(Parser const& parser, InputBuffer in, ProtocolParameter* para) {
     if (para == nullptr)
         return -1;
     std::vector<uint8_t> out;
+    out.reserve(in.size());
     // Reverse escape.
-    if (ReverseEscape(in, &out) < 0)
+    if (ReverseEscape(in, out) < 0)
         return -1;
     // XOR checksum check.
     if (BccCheckSum(&(out[1]), out.size() - 3) != *(out.end() - 2))

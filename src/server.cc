@@ -266,7 +266,7 @@ int JT808Server::PackagingAndSendMessage(decltype(socket(0, 0, 0)) const& socket
                                          ProtocolParameter* para) {
     std::vector<uint8_t> msg;
     para->msg_head.msg_id = msg_id; // Set message ID.
-    if (JT808FramePackage(packager_, *para, &msg) < 0) {
+    if (JT808FramePackage(packager_, *para, msg) < 0) {
         printf("%s[%d]: Package message failed !!!\n", __FUNCTION__, __LINE__);
         return -1;
     }

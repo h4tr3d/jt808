@@ -37,64 +37,62 @@ namespace libjt808 {
 namespace {
 
 // 封装消息头.
-int JT808FrameHeadPackage(MsgHead const& msg_head, std::vector<uint8_t>* out) {
-    if (out == nullptr)
-        return -1;
-    out->clear();
-    out->push_back(PROTOCOL_SIGN); // 协议头部标识.
+int JT808FrameHeadPackage(MsgHead const& msg_head, std::vector<uint8_t>& out) {
+    out.clear();
+    out.push_back(PROTOCOL_SIGN); // 协议头部标识.
     U16ToU8Array u16converter;
     // 消息ID.
     u16converter.u16val = EndianSwap16(msg_head.msg_id);
     for (int i = 0; i < 2; ++i)
-        out->push_back(u16converter.u8array[i]);
+        out.push_back(u16converter.u8array[i]);
     // 消息体属性.
     u16converter.u16val = EndianSwap16(msg_head.msgbody_attr.u16val);
     for (int i = 0; i < 2; ++i)
-        out->push_back(u16converter.u8array[i]);
+        out.push_back(u16converter.u8array[i]);
     // 终端手机号(BCD码).
     std::vector<uint8_t> phone_num_bcd;
     if (StringToBcd(msg_head.phone_num, &phone_num_bcd) != 0)
         return -1;
     for (auto& u8val : phone_num_bcd)
-        out->push_back(u8val);
+        out.push_back(u8val);
     // 消息流水号.
     u16converter.u16val = EndianSwap16(msg_head.msg_flow_num);
     for (int i = 0; i < 2; ++i)
-        out->push_back(u16converter.u8array[i]);
+        out.push_back(u16converter.u8array[i]);
     // 封包项.
     if ((msg_head.msgbody_attr.bit.packet == 1) && (msg_head.total_packet > 1)) {
         u16converter.u16val = EndianSwap16(msg_head.total_packet);
         for (int i = 0; i < 2; ++i)
-            out->push_back(u16converter.u8array[i]);
+            out.push_back(u16converter.u8array[i]);
         u16converter.u16val = EndianSwap16(msg_head.packet_seq);
         for (int i = 0; i < 2; ++i)
-            out->push_back(u16converter.u8array[i]);
+            out.push_back(u16converter.u8array[i]);
     }
     return 0;
 }
 
 // 消息内容长度修正.
-int JT808MsgBodyLengthFix(MsgHead const& msg_head, uint16_t const& msg_len, std::vector<uint8_t>* out) {
-    if (out == nullptr || out->size() < 12)
+int JT808MsgBodyLengthFix(MsgHead const& msg_head, uint16_t const& msg_len, std::vector<uint8_t>& out) {
+    if (out.size() < 12)
         return -1;
     auto msgbody_attr       = msg_head.msgbody_attr;
     msgbody_attr.bit.msglen = msg_len;
     U16ToU8Array u16converter;
     u16converter.u16val = EndianSwap16(msgbody_attr.u16val);
-    (*out)[3]           = u16converter.u8array[0];
-    (*out)[4]           = u16converter.u8array[1];
+    out[3]           = u16converter.u8array[0];
+    out[4]           = u16converter.u8array[1];
     return 0;
 }
 
 // JT808协议转义.
-int JT808MsgEscape(std::vector<uint8_t>* out) {
-    *(out->begin())   = 0x00;
-    *(out->end() - 1) = 0x00;
-    auto in           = std::move(*out);
+int JT808MsgEscape(std::vector<uint8_t>& out) {
+    *(out.begin())   = 0x00;
+    *(out.end() - 1) = 0x00;
+    auto in           = std::move(out);
     if (Escape(in, out) < 0)
         return -1;
-    *(out->begin())   = PROTOCOL_SIGN;
-    *(out->end() - 1) = PROTOCOL_SIGN;
+    *(out.begin())   = PROTOCOL_SIGN;
+    *(out.end() - 1) = PROTOCOL_SIGN;
     return 0;
 }
 
@@ -768,26 +766,24 @@ bool JT808FramePackagerOverride(Packager* packager, uint16_t const& msg_id, Pack
 }
 
 // 封装命令.
-int JT808FramePackage(Packager const& packager, ProtocolParameter const& para, std::vector<uint8_t>* out) {
-    if (out == nullptr)
-        return -1;
+int JT808FramePackage(Packager const& packager, ProtocolParameter const& para, std::vector<uint8_t>& out) {
     auto it = packager.find(para.msg_head.msg_id);
     if (it == packager.end())
         return -1;
-    out->clear();
+    out.clear();
     // 生成消息头
     if (JT808FrameHeadPackage(para.msg_head, out) < 0)
         return -1;
     // 封装消息内容.
-    int ret = it->second(para, out);
+    int ret = it->second(para, &out);
     if (ret >= 0) {
         // 修正消息长度.
         if (JT808MsgBodyLengthFix(para.msg_head, ret, out) < 0)
             return -1;
         // 校验码.
-        out->push_back(BccCheckSum(&((*out)[1]), out->size() - 1));
+        out.push_back(BccCheckSum(&((out)[1]), out.size() - 1));
         // 结束标识位.
-        out->push_back(PROTOCOL_SIGN);
+        out.push_back(PROTOCOL_SIGN);
         // 处理转义.
         if (JT808MsgEscape(out) < 0)
             return -1;

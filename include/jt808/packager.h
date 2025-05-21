@@ -60,7 +60,7 @@ bool JT808FramePackagerOverride(Packager* packager, std::pair<uint16_t, PackageH
 bool JT808FramePackagerOverride(Packager* packager, uint16_t const& msg_id, PackageHandler const& handler);
 
 // Packaging command.
-int JT808FramePackage(Packager const& packager, ProtocolParameter const& para, std::vector<uint8_t>* out);
+int JT808FramePackage(Packager const& packager, ProtocolParameter const& para, std::vector<uint8_t> &out);
 
 } // namespace libjt808
 

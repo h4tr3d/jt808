@@ -35,39 +35,35 @@
 namespace libjt808 {
 
 // 转义函数.
-int Escape(std::vector<uint8_t> const& in,
-           std::vector<uint8_t>* out) {
-  if (out == nullptr) return -1;
-  out->clear();
+int Escape(InputBuffer in, std::vector<uint8_t>& out) {
+  out.clear();
   for (auto& u8val: in) {
     if (u8val == PROTOCOL_SIGN) {
-      out->push_back(PROTOCOL_ESCAPE);
-      out->push_back(PROTOCOL_ESCAPE_SIGN);
+      out.push_back(PROTOCOL_ESCAPE);
+      out.push_back(PROTOCOL_ESCAPE_SIGN);
     } else if (u8val == PROTOCOL_ESCAPE) {
-      out->push_back(PROTOCOL_ESCAPE);
-      out->push_back(PROTOCOL_ESCAPE_ESCAPE);
+      out.push_back(PROTOCOL_ESCAPE);
+      out.push_back(PROTOCOL_ESCAPE_ESCAPE);
     } else {
-      out->push_back(u8val);
+      out.push_back(u8val);
     }
   }
   return 0;
 }
 
 // 逆转义函数.
-int ReverseEscape(std::vector<uint8_t> const& in,
-                  std::vector<uint8_t>* out) {
-  if (out == nullptr) return -1;
-  out->clear();
+int ReverseEscape(InputBuffer in, std::vector<uint8_t> &out) {
+  out.clear();
   for (size_t i = 0; i < in.size(); ++i) {
     if ((in[i] == PROTOCOL_ESCAPE) && (in[i+1] == PROTOCOL_ESCAPE_SIGN)) {
-      out->push_back(PROTOCOL_SIGN);
+      out.push_back(PROTOCOL_SIGN);
       ++i;
     } else if ((in[i] == PROTOCOL_ESCAPE) &&
                (in[i+1] == PROTOCOL_ESCAPE_ESCAPE)) {
-      out->push_back(PROTOCOL_ESCAPE);
+      out.push_back(PROTOCOL_ESCAPE);
       ++i;
     } else {
-      out->push_back(in[i]);
+      out.push_back(in[i]);
     }
   }
   return 0;

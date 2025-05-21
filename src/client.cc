@@ -482,7 +482,7 @@ int JT808Client::PackagingMessage(uint32_t const& msg_id, std::vector<uint8_t>* 
         return -1;
     std::unique_lock<std::mutex> lock(msg_generate_mutex_);
     parameter_.msg_head.msg_id = msg_id; // 设置消息ID.
-    if (JT808FramePackage(packager_, parameter_, out) < 0) {
+    if (JT808FramePackage(packager_, parameter_, *out) < 0) {
         printf("%s[%d]: Package message failed !!!\n", __FUNCTION__, __LINE__);
         return -1;
     }

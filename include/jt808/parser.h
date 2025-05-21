@@ -43,7 +43,7 @@ namespace libjt808 {
 
 // Message body parsing function definition.
 // Returns 0 on success, -1 on failure.
-using ParseHandler = std::function<int(std::vector<uint8_t> const& in, ProtocolParameter* para)>;
+using ParseHandler = std::function<int(InputBuffer in, ProtocolParameter* para)>;
 
 // Parser definition, map<key, value>, key: message ID, value: message body parsing handler.
 using Parser = std::map<uint16_t, ParseHandler>;
@@ -77,7 +77,7 @@ bool JT808FrameParserOverride(Parser* parser, uint16_t const& msg_id, ParseHandl
  * @param para The protocol parameter structure pointer to store parsed data.
  * @return int Returns 0 on success, -1 on failure.
  */
-int JT808FrameParse(Parser const& parser, std::vector<uint8_t> const& in, ProtocolParameter* para);
+int JT808FrameParse(Parser const& parser, InputBuffer in, ProtocolParameter* para);
 
 } // namespace libjt808
 

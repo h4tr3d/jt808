@@ -35,8 +35,18 @@
 
 #include <vector>
 
+// TBD
+#if __has_include(<span>)
+#include <span>
+#endif
 
 namespace libjt808 {
+
+#ifdef __cpp_lib_span
+using InputBuffer = std::span<const uint8_t>;
+#else
+using InputBuffer = std::vector<uint8_t> const&;
+#endif
 
 // 无符号32位整型转无符号字节数组.
 union U32ToU8Array {
@@ -64,12 +74,12 @@ constexpr uint32_t EndianSwap32(uint32_t const& u32val) {
 }
 
 // 转义函数.
-int Escape(std::vector<uint8_t> const& in,
-           std::vector<uint8_t>* out);
+int Escape(InputBuffer in,
+           std::vector<uint8_t>& out);
 
 // 逆转义函数.
-int ReverseEscape(std::vector<uint8_t> const& in,
-                  std::vector<uint8_t>* out);
+int ReverseEscape(InputBuffer in,
+                  std::vector<uint8_t>& out);
 
 // 异或校验.
 uint8_t BccCheckSum(const uint8_t *src, const size_t &len);

@@ -717,26 +717,26 @@ bool JT808FrameParserOverride(Parser* parser, uint16_t const& msg_id, ParseHandl
  * @param para The protocol parameter structure pointer to store parsed data.
  * @return int Returns 0 on success, -1 on failure.
  */
-int JT808FrameParse(Parser const& parser, InputBuffer in, ProtocolParameter* para) {
+std::error_code JT808FrameParse(Parser const& parser, InputBuffer in, ProtocolParameter* para) {
     if (para == nullptr)
-        return -1;
+        return make_error_code(ParserError::ParametersNull);
     std::vector<uint8_t> out;
     out.reserve(in.size());
     // Reverse escape.
     if (ReverseEscape(in, out) < 0)
-        return -1;
+        return make_error_code(ParserError::UnesapingError);
     // XOR checksum check.
     if (BccCheckSum(&(out[1]), out.size() - 3) != *(out.end() - 2))
-        return -1;
+        return make_error_code(ParserError::ChecksumError);
     // Parse message header.
     if (JT808FrameHeadParse(out, &para->parse.msg_head) != 0)
-        return -1;
+        return make_error_code(ParserError::HeaderParseError);
     para->msg_head.phone_num = para->parse.msg_head.phone_num;
     // Parse message content.
     auto it = parser.find(para->parse.msg_head.msg_id);
     if (it == parser.end())
-        return -1;
-    return it->second(out, para);
+        return make_error_code(ParserError::UnregisteredMessageParser);
+    return std::error_code(it->second(out, para), parser_category());
 }
 
 } // namespace libjt808

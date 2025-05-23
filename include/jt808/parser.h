@@ -34,12 +34,68 @@
 
 #include <functional>
 #include <map>
+#include <system_error>
 #include <utility>
 #include <vector>
 
 #include "jt808/protocol_parameter.h"
 
 namespace libjt808 {
+
+// auto f = std::errc::address_family_not_supported;
+
+enum class ParserError
+{
+    Ok,
+    MiscError = -1,
+    ParametersNull = -2,
+    UnesapingError = -3,
+    ChecksumError = -4,
+    HeaderParseError = -5,
+    UnregisteredMessageParser = -6,
+};
+
+class ParserCategory : public std::error_category
+{
+public:
+
+    virtual const char *name() const noexcept override
+    {
+        return "JT808-Parser";
+    }
+
+    virtual std::string message(int ev) const override
+    {
+        auto code = static_cast<ParserError>(ev);
+        switch (code) {
+            case ParserError::Ok: return "Success";
+            case ParserError::MiscError: return "Misc error";
+            case ParserError::ParametersNull: return "ProtocolParameters null";
+            case ParserError::UnesapingError: return "UnEscaping process fail";
+            case ParserError::ChecksumError: return "Checksum verification error";
+            case ParserError::HeaderParseError: return "Header Parser Error";
+            case ParserError::UnregisteredMessageParser: return "Message-specific parser is not registered";
+        }
+        return "Unknown Parser Error";
+    }
+};
+
+inline const ParserCategory& parser_category() noexcept
+{
+    static ParserCategory cat;
+    return cat;
+}
+
+inline std::error_code make_error_code(ParserError errc) noexcept
+{
+    return std::error_code(static_cast<int>(errc), parser_category());
+}
+
+inline std::error_condition make_error_condition(ParserError errc) noexcept
+{
+    return std::error_condition(static_cast<int>(errc), parser_category());
+}
+
 
 // Message body parsing function definition.
 // Returns 0 on success, -1 on failure.
@@ -77,7 +133,7 @@ bool JT808FrameParserOverride(Parser* parser, uint16_t const& msg_id, ParseHandl
  * @param para The protocol parameter structure pointer to store parsed data.
  * @return int Returns 0 on success, -1 on failure.
  */
-int JT808FrameParse(Parser const& parser, InputBuffer in, ProtocolParameter* para);
+std::error_code JT808FrameParse(Parser const& parser, InputBuffer in, ProtocolParameter* para);
 
 } // namespace libjt808
 

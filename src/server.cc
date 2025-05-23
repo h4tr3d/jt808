@@ -308,7 +308,7 @@ int JT808Server::ReceiveAndParseMessage(decltype(socket(0, 0, 0)) const& socket,
     if (msg.empty())
         return -2;
     // Parse the message.
-    if (JT808FrameParse(parser_, msg, para) == -1) {
+    if (JT808FrameParse(parser_, msg, para)) {
         printf("%s[%d]: Parse message failed !!!\n", __FUNCTION__, __LINE__);
         return -1;
     }
@@ -411,7 +411,7 @@ void JT808Server::ServiceHandler(void) {
                 // printf("Recv[%d]: ", ret);
                 // for (auto const& ch : msg) printf("%02X ", ch);
                 // printf("\n");
-                if (JT808FrameParse(parser_, msg, &socket.second) == 0) {
+                if (!JT808FrameParse(parser_, msg, &socket.second)) {
                     socket.second.respone_result = kSuccess;
                     auto const& msg_id           = socket.second.parse.msg_head.msg_id;
                     if (msg_id == kLocationReport) {

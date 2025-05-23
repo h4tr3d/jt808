@@ -470,7 +470,7 @@ int JT808Client::ReceiveAndParseMessage(int const& timeout) {
     // for (auto const& uch : msg) printf("%02X ", uch);
     // printf("\n");
     // 解析消息.
-    if (JT808FrameParse(parser_, msg, &parameter_) == -1) {
+    if (JT808FrameParse(parser_, msg, &parameter_)) {
         printf("%s[%d]: Parse message failed !!!\n", __FUNCTION__, __LINE__);
         return -1;
     }
@@ -659,7 +659,7 @@ void JT808Client::ReceiveHandler(std::atomic_bool* const running) {
             // printf("JT808 Recv[%d]: ", static_cast<int>(msg.size()));
             // for (auto const& uch : msg) printf("%02X ", uch);
             // printf("\n");
-            if (JT808FrameParse(parser_, msg, &parameter_) == 0) {
+            if (!JT808FrameParse(parser_, msg, &parameter_)) {
                 auto const& msg_id = parameter_.parse.msg_head.msg_id;
                 if (msg_id == kSetTerminalParameters) { // 设置终端参数.
                     // 更新终端参数.

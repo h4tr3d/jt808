@@ -459,10 +459,10 @@ int JT808FrameParserInit(Parser* parser) {
     parser->insert(std::pair<uint16_t, ParseHandler>(
         kGetLocationInformationResponse, [](InputBuffer in, ProtocolParameter* para) -> int {
             if (para == nullptr)
-                return -1;
+                return -100;
             auto const& msg_len = para->parse.msg_head.msgbody_attr.bit.msglen;
             if (msg_len < 30)
-                return -1;
+                return -101;
             uint16_t pos = MSGBODY_NOPACKET_POS;
             if (para->parse.msg_head.msgbody_attr.bit.packet == 1)
                 pos = MSGBODY_PACKET_POS;
@@ -499,13 +499,13 @@ int JT808FrameParserInit(Parser* parser) {
             std::vector<uint8_t> bcd;
             bcd.assign(in.begin() + pos + 22, in.begin() + pos + 28);
             BcdToStringFillZero(bcd, &basic_info.time);
-            if (msg_len > 28) { // Location additional information items.
-                uint8_t end = msg_len + pos;
+            if (msg_len > 30) { // Location additional information items.
+                uint8_t end = msg_len + pos - 2;
                 pos += 28;
                 std::vector<uint8_t> item_content;
                 while (pos <= end - 2) { // Additional information length is at least 1.
                     if (pos + 1 + in[pos + 1] > end)
-                        return -1; // Additional information length exceeds the range.
+                        return -102; // Additional information length exceeds the range.
                     item_content.assign(in.begin() + pos + 2, in.begin() + pos + 2 + in[pos + 1]);
                     extension_info[in[pos]] = item_content;
                     pos += 2 + in[pos + 1];
